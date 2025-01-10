@@ -52,10 +52,10 @@ jobs:
         if: success()
         uses: github/codeql-action/init@cf7e9f23492505046de9a37830c3711dd0f25bb3 # codeql-bundle-v2.16.2
         with:
-          languages: javascript
+          languages: csharp
 
       - name: Build project
-        run: npm install && npm run build
+        run: ./build.ps1 -Command Build -Configuration Debug
 
       - name: Perform CodeQL Analysis
         if: success()

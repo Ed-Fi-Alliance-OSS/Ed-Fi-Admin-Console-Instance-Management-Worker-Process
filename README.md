@@ -1,5 +1,8 @@
 # Ed-Fi-Admin-Console-Instance-Management-Worker-Process
 
+[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/Ed-Fi-Alliance-OSS/Ed-Fi-Admin-Console-Instance-Management-Worker-Process/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Ed-Fi-Alliance-OSS/Ed-Fi-Admin-Console-Instance-Management-Worker-Process)
+
+
 ## Table of Contents
 
 - [General Overview](#general-overview)
