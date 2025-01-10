@@ -55,9 +55,9 @@ param(
 )
 
 $solutionRoot = "$PSScriptRoot/Application"
-$defaultSolution = "$solutionRoot/EdFi.AdminConsole.HealthCheckService.sln"
-$projectName = "Ed-Fi-Admin-Console-Health-Check-Worker-Process"
-$packageName = "Ed-Fi-Admin-Console-Health-Check-Worker-Process"
+$defaultSolution = "$solutionRoot/EdFi.AdminConsole.InstanceManagementWorker.sln"
+$projectName = "Ed-Fi-Admin-Console-Instance-Management-Worker-Process"
+$packageName = "Ed-Fi-Admin-Console-Instance-Management-Worker-Process"
 $testResults = "$PSScriptRoot/TestResults"
 
 $maintainers = "Ed-Fi Alliance, LLC and contributors"
@@ -82,7 +82,7 @@ function SetDMSAssemblyInfo {
     <PropertyGroup>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
         <ErrorLog>results.sarif,version=2.1</ErrorLog>
-        <Product>Ed-Fi Admin Console Health Check Worker</Product>
+        <Product>Ed-Fi Admin Console Instance Management Worker Process</Product>
         <Authors>$maintainers</Authors>
         <Company>$maintainers</Company>
         <Copyright>Copyright © ${(Get-Date).year)} Ed-Fi Alliance</Copyright>
