@@ -54,8 +54,8 @@ param(
     $IsLocalBuild
 )
 
-$solutionRoot = "$PSScriptRoot/Application"
-$defaultSolution = "$solutionRoot/EdFi.AdminConsole.InstanceManagementWorker.sln"
+$solutionRoot = "$PSScriptRoot/src"
+$defaultSolution = "$solutionRoot/EdFi.AdminConsole.InstanceManagement.sln"
 $projectName = "Ed-Fi-Admin-Console-Instance-Management-Worker-Process"
 $packageName = "Ed-Fi-Admin-Console-Instance-Management-Worker-Process"
 $testResults = "$PSScriptRoot/TestResults"
