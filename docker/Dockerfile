@@ -21,4 +21,4 @@ WORKDIR /app
 COPY --from=build /app .
 
 # Execute the app
-ENTRYPOINT ["dotnet", "EdFi.AdminConsole.InstanceManagement.dll"]
+ENTRYPOINT ["dotnet", "EdFi.AdminConsole.InstanceManagementWorker.dll"]
