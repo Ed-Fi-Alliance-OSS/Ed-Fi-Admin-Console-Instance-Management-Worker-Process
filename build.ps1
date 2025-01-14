@@ -31,7 +31,7 @@
 param(
     # Command to execute, defaults to "Build".
     [string]
-    [ValidateSet("Clean", "Build", "UnitTest")]
+    [ValidateSet("Clean", "Build", "UnitTest", "BuildAndPublish")]
     $Command = "Build",
 
     # Assembly and package version number for the Data Management Service. The
@@ -100,6 +100,14 @@ function Compile {
     }
 }
 
+function Publish {
+    Invoke-Execute {
+        $outputPath = "$solutionRoot/$projectName/publish"
+        $project = "$solutionRoot/$projectName/"
+        dotnet publish $project -c $Configuration /p:EnvironmentName=Production -o $outputPath --no-build --nologo
+    }
+}
+
 function RunTests {
     param (
         # File search filter
@@ -153,6 +161,16 @@ function Invoke-TestExecution {
     }
 }
 
+function Invoke-SetAssemblyInfo {
+    Write-Output "Setting Assembly Information"
+
+    Invoke-Step { SetDMSAssemblyInfo }
+}
+
+function Invoke-Publish {
+    Invoke-Step { Publish }
+}
+
 Invoke-Main {
     if ($IsLocalBuild) {
         $nugetExePath = Install-NugetCli
@@ -162,6 +180,11 @@ Invoke-Main {
         Clean { Invoke-Clean }
         Build { Invoke-Build }
         UnitTest { Invoke-TestExecution UnitTests }
+        BuildAndPublish {
+            Invoke-SetAssemblyInfo
+            Invoke-Build
+            Invoke-Publish
+        }
         default { throw "Command '$Command' is not recognized" }
     }
 }
