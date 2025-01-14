@@ -63,7 +63,7 @@ jobs:
 
           ./build.ps1 -Command BuildAndPublish `
               -Configuration Release `
-              -Version $appVersion
+              -DMSVersion $appVersion
 
       - name: Setup Nuget.exe
         uses: nuget/setup-nuget@fd9fffd6ca4541cf4152a9565835ca1a88a6eb37 #v1.1.1
