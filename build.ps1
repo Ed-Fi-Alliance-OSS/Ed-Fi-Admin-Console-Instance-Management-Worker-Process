@@ -31,7 +31,7 @@
 param(
     # Command to execute, defaults to "Build".
     [string]
-    [ValidateSet("Clean", "Build", "UnitTest", "BuildAndPublish")]
+    [ValidateSet("Clean", "Build", "UnitTest", "Package", "BuildAndPublish")]
     $Command = "Build",
 
     # Assembly and package version number for the Data Management Service. The
@@ -61,6 +61,9 @@ $packageName = "Ed-Fi-Admin-Console-Instance-Management-Worker-Process"
 $testResults = "$PSScriptRoot/TestResults"
 
 $maintainers = "Ed-Fi Alliance, LLC and contributors"
+
+$appCommonPackageName = "EdFi.Installer.AppCommon"
+$appCommonPackageVersion = "3.1.0"
 
 Import-Module -Name "$PSScriptRoot/eng/build-helpers.psm1" -Force
 
@@ -169,6 +172,29 @@ function Invoke-Publish {
     Invoke-Step { Publish }
 }
 
+function AddAppCommonPackageForInstaller {
+    $destinationPath = "$PSScriptRoot/Installer"
+
+    $arguments = @{
+        AppCommonPackageName    = $appCommonPackageName
+        AppCommonPackageVersion = $appCommonPackageVersion
+        NuGetFeed               = $EdFiNuGetFeed
+        DestinationPath         = $destinationPath
+    }
+
+    Add-AppCommon @arguments
+}
+
+function BuildPackage {
+    $baseProjectFullName = "$solutionRoot/$projectName/$projectName"
+    RunDotNetPack -PackageVersion $DMSVersion -projectName $baseProjectFullName $baseProjectFullName
+}
+
+function Invoke-BuildPackage {
+    Invoke-Step { AddAppCommonPackageForInstaller }
+    Invoke-Step { BuildPackage }
+}
+
 Invoke-Main {
     if ($IsLocalBuild) {
         $nugetExePath = Install-NugetCli
@@ -183,6 +209,7 @@ Invoke-Main {
             Invoke-Build
             Invoke-Publish
         }
+        Package { Invoke-BuildPackage }
         default { throw "Command '$Command' is not recognized" }
     }
 }
