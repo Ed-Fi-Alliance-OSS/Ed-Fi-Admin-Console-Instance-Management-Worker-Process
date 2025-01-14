@@ -164,3 +164,4 @@ Invoke-Main {
         UnitTest { Invoke-TestExecution UnitTests }
         default { throw "Command '$Command' is not recognized" }
     }
+}
