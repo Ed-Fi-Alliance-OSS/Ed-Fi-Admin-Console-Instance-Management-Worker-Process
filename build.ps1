@@ -172,27 +172,22 @@ function Invoke-Publish {
     Invoke-Step { Publish }
 }
 
-function AddAppCommonPackageForInstaller {
-    $destinationPath = "$PSScriptRoot/Installer"
-
-    $arguments = @{
-        AppCommonPackageName    = $appCommonPackageName
-        AppCommonPackageVersion = $appCommonPackageVersion
-        NuGetFeed               = $EdFiNuGetFeed
-        DestinationPath         = $destinationPath
-    }
-
-    Add-AppCommon @arguments
-}
 
 function BuildPackage {
-    $baseProjectFullName = "$solutionRoot/$projectName/$projectName"
-    RunDotNetPack -PackageVersion $DMSVersion -projectName $baseProjectFullName $baseProjectFullName
+    Invoke-Execute {
+        $baseProjectFullName = "$solutionRoot/$cliProject/$cliProject"  
+        RunDotNetPack -PackageVersion $Version -projectName $baseProjectFullName $baseProjectFullName            
+    }
 }
 
 function Invoke-BuildPackage {
     Invoke-Step { AddAppCommonPackageForInstaller }
     Invoke-Step { BuildPackage }
+}
+
+function Invoke-BuildAndPublish {
+    Invoke-Build
+    Invoke-Step { Publish }
 }
 
 Invoke-Main {
@@ -205,9 +200,7 @@ Invoke-Main {
         Build { Invoke-Build }
         UnitTest { Invoke-TestExecution UnitTests }
         BuildAndPublish {
-            Invoke-SetAssemblyInfo
-            Invoke-Build
-            Invoke-Publish
+            Invoke-BuildAndPublish
         }
         Package { Invoke-BuildPackage }
         default { throw "Command '$Command' is not recognized" }
