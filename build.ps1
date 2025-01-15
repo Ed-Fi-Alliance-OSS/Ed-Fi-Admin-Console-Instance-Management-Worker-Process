@@ -186,8 +186,10 @@ function Invoke-BuildPackage {
 }
 
 function Invoke-BuildAndPublish {
-    Invoke-Build
-    Invoke-Step { Publish }
+    Invoke-Execute {
+        $baseProjectFullName = "$solutionRoot/$projectName/$projectName"  
+        RunDotNetPack -PackageVersion $Version -projectName $baseProjectFullName $baseProjectFullName            
+    }
 }
 
 Invoke-Main {
