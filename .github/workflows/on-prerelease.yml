@@ -8,6 +8,7 @@ on:
   release:
     types:
       - prereleased
+  workflow_dispatch:
 
 permissions: read-all
 
@@ -18,7 +19,9 @@ env:
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
   MANIFEST_FILE: "_manifest/spdx_2.2/manifest.spdx.json"
-  PACKAGE_NAME: "AdminConsole.InstanceManagement"
+  PACKAGE_NAME: "AdminConsole.InstanceManagementWorker"
+  REF: ${{ github.ref_name }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
 
 jobs:
   pack:
@@ -35,23 +38,23 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+          
+      - name: Set Version Numbers
+        run: |
+          ls
 
       - name: Set Version Numbers
         id: versions
         run: |
           $prefix = "v"
-
           # Install the MinVer CLI tool
           &dotnet tool install --global minver-cli
-
           $appVersion = $(minver -t $prefix)
-
           # Full release name
           "instance-management=$appVersion" >> $env:GITHUB_OUTPUT
-
           # SemVer
           "instance-management-semver=$($appVersion -Replace $prefix)" >> $env:GITHUB_OUTPUT
-
+          
       - name: Setup .NET
         uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # v3.0.3
         with:
@@ -60,11 +63,10 @@ jobs:
       - name: Publish .NET Assemblies
         run: |
           $appVersion = "${{ steps.versions.outputs.instance-management-semver }}"
-
           ./build.ps1 -Command BuildAndPublish `
               -Configuration Release `
-              -DMSVersion $appVersion
-
+              -Version $appVersion
+              
       - name: Setup Nuget.exe
         uses: nuget/setup-nuget@fd9fffd6ca4541cf4152a9565835ca1a88a6eb37 #v1.1.1
 
@@ -72,19 +74,18 @@ jobs:
         if: success()
         run: |
           $appVersion = "${{ steps.versions.outputs.instance-management-semver }}"
-
           "Building ${{ env.PACKAGE_NAME }} NuGet Package" | Write-Output
           # installer and Transform load to single package
           ./build.ps1 -Command Package `
+              -Version $appVersion `
               -Configuration Release
-              -DMSVersion $appVersion `
-
+              
       - name: Generate hash for NuGet package
         id: hash-code
         shell: bash
         run: |
           echo "hash-code=$(sha256sum *.nupkg | base64 -w0)" >> $GITHUB_OUTPUT
-
+          
       - name: Upload Packages as Artifacts
         if: success()
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
@@ -103,13 +104,11 @@ jobs:
       fail-fast: false
       matrix:
         dockerfile:
-          [
-            { name: "development", path: "docker/Dockerfile", type: "local" },
-          ]
+          [ { name: "development", path: "docker/Dockerfile", type: "local" } ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          
       - name: Log in to Docker Hub
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
@@ -118,7 +117,7 @@ jobs:
 
       - name: Build
         run: |
-          dockerfile=$(echo ${{matrix.dockerfile.path}}
+          dockerfile=$(echo ${{matrix.dockerfile.path}})
 
           docker build -f $dockerfile -t ${{ matrix.dockerfile.name }} --build-arg="pre" .
 
@@ -136,7 +135,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@cf7e9f23492505046de9a37830c3711dd0f25bb3 #codeql-bundle-v2.16.2
         with:
           sarif_file: sarif-${{ matrix.dockerfile.name }}.output.json
-  
+
   docker-publish:
     name: Publish to Docker Hub
     permissions:
@@ -155,9 +154,7 @@ jobs:
         id: prepare-tags
         run: |
           BASE="${{ env.IMAGE_NAME }}"
-
           REF="${{ env.REF }}"
-
           if [[ $REF =~ "pre" ]]
           then
             # Pre-releases get the version and the tag "pre"
@@ -169,7 +166,6 @@ jobs:
             MINOR=`echo ${REF} | awk -F"." '{print $1"."$2}'`
             TAGS="${{ env.IMAGE_NAME }}:${REF},${{ env.IMAGE_NAME }}:${MINOR}"
           fi
-
           echo "TAGS=$TAGS" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
@@ -193,7 +189,7 @@ jobs:
           context: "{{defaultContext}}:/"
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:pre
           cache-to: type=inline
-          build-args: ML_VERSION=${{ steps.prepare-tags.outputs.NPM_VERSION }}
+          build-args: ML_VERSION=${{ steps.prepare-tags.outputs.NPM_VERSION }} #Ask Jesus which version to use
           file: docker/Dockerfile
           tags: ${{ steps.prepare-tags.outputs.TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -209,7 +205,7 @@ jobs:
     outputs:
       sbom-hash-code: ${{ steps.sbom-hash-code.outputs.sbom-hash-code }}
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Get Artifacts
         uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 #v4.1.1
@@ -222,20 +218,14 @@ jobs:
           $packageName = "${{ env.PACKAGE_NAME }}"
           $version = "${{ needs.pack.outputs.instance-management-version }}"
 
-          $url = "https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64"
-          $out = "$($env:RUNNER_TEMP)/sbom-tool"
-          Invoke-RestMethod -Uri $url -OutFile $out
-          chmod +x $out
-
           Get-ChildItem -Include "$packageName.*.nupkg" -Recurse | ForEach-Object { $_.FullName } > buildfilelist.txt
-          New-Item -Path manifest -Type Directory
 
           dotnet tool install --global Microsoft.Sbom.DotNetTool
-
+          
           sbom-tool generate `
               -b ./ `
               -bl ./buildfilelist.txt `
-              -bc "./$packageName" `
+              -bc "./" `
               -pn "$packageName" `
               -pv $version `
               -nsb https://ed-fi.org `
@@ -284,21 +274,15 @@ jobs:
           $token = "${{ secrets.GITHUB_TOKEN }}"
           $file = "${{ env.MANIFEST_FILE }}"
           $uploadName = "${{ env.PACKAGE_NAME }}-SBOM.zip"
-
           $url = "https://api.github.com/repos/$repo/releases/tags/$release"
-
           $gh_headers = @{
               "Accept"        = "application/vnd.github+json"
               "Authorization" = "Bearer $token"
           }
-
           $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
           $releaseId = $response.id
-
           $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
           Compress-Archive $file -DestinationPath $uploadName
-
           $gh_headers["Content-Type"] = "application/octet"
           Invoke-RestMethod -Method POST `
               -Uri "$($url)?name=$($uploadName)" `
@@ -328,7 +312,7 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Get Artifact
         uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 #v4.1.1
@@ -345,7 +329,6 @@ jobs:
             EdFiNuGetFeed = "${{ env.ARTIFACTS_FEED_URL }}"
             NuGetApiKey = "${{ env.ARTIFACTS_API_KEY }}"
           }
-
           $artifact | ForEach-Object {
               $arguments.PackageFile = $_
               ./build.ps1 Push @arguments
