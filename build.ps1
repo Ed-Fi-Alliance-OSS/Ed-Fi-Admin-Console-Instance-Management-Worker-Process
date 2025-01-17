@@ -49,6 +49,11 @@ param(
     [string]
     $EdFiNuGetFeed = "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/nuget/v3/index.json",
 
+    # API key for accessing the feed above. Only required with with the Push
+    # command.
+    [string]
+    $NuGetApiKey,
+
     # Only required with local builds and testing.
     [switch]
     $IsLocalBuild
