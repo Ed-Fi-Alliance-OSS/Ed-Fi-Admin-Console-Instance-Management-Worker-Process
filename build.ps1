@@ -142,7 +142,7 @@ function Push {
 
     if (-not $PackageFile) {         
          $PackageFile = "$PSScriptRoot/EdFi.AdminConsole.InstanceManagementWorker.$PackageVersion.nupkg"  
-         DotnetPush  $PackageFile       
+         DotnetPush  -PackageFileName $PackageFile       
     }
     else
     {
