@@ -54,6 +54,12 @@ param(
     [string]
     $NuGetApiKey,
 
+    # Full path of a package file to push to the NuGet feed. Optional, only
+    # applies with the Push command. If not set, then the script looks for a
+    # NuGet package corresponding to the provided $DMSVersion and $BuildCounter.
+    [string]
+    $PackageFile,
+
     # Only required with local builds and testing.
     [switch]
     $IsLocalBuild
