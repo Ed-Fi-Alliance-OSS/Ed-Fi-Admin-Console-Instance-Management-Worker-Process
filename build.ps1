@@ -49,6 +49,17 @@ param(
     [string]
     $EdFiNuGetFeed = "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/nuget/v3/index.json",
 
+    # API key for accessing the feed above. Only required with with the Push
+    # command.
+    [string]
+    $NuGetApiKey,
+
+    # Full path of a package file to push to the NuGet feed. Optional, only
+    # applies with the Push command. If not set, then the script looks for a
+    # NuGet package corresponding to the provided $DMSVersion and $BuildCounter.
+    [string]
+    $PackageFile,
+
     # Only required with local builds and testing.
     [switch]
     $IsLocalBuild
@@ -140,14 +151,8 @@ function Push {
         throw "Cannot push a NuGet package without providing an API key in the `NuGetApiKey` argument."
     }
 
-    if (-not $PackageFile) {         
-         $PackageFile = "$PSScriptRoot/EdFi.AdminConsole.InstanceManagementWorker.$PackageVersion.nupkg"  
-         DotnetPush  $PackageFile       
-    }
-    else
-    {
-        DotnetPush  $PackageFile
-    }
+    $PackageFile = "$PSScriptRoot/EdFi.AdminConsole.InstanceManagementWorker.$PackageVersion.nupkg"  
+    DotnetPush  -PackageFileName $PackageFile       
 }
 
 function DotnetPush {
