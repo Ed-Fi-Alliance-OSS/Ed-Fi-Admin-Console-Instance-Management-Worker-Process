@@ -49,14 +49,14 @@ param(
     [string]
     $EdFiNuGetFeed = "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/nuget/v3/index.json",
 
-    # API key for accessing the feed above. Only required with with the Push
+    # API key for accessing the feed above. Only required with the Push
     # command.
     [string]
     $NuGetApiKey,
 
     # Full path of a package file to push to the NuGet feed. Optional, only
     # applies with the Push command. If not set, then the script looks for a
-    # NuGet package corresponding to the provided $DMSVersion and $BuildCounter.
+    # NuGet package corresponding to the provided $Version and $BuildCounter.
     [string]
     $PackageFile,
 
