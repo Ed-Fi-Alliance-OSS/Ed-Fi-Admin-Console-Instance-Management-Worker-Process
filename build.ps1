@@ -140,14 +140,8 @@ function Push {
         throw "Cannot push a NuGet package without providing an API key in the `NuGetApiKey` argument."
     }
 
-    if (-not $PackageFile) {         
-         $PackageFile = "$PSScriptRoot/EdFi.AdminConsole.InstanceManagementWorker.$PackageVersion.nupkg"  
-         DotnetPush  -PackageFileName $PackageFile       
-    }
-    else
-    {
-        DotnetPush  $PackageFile
-    }
+    $PackageFile = "$PSScriptRoot/EdFi.AdminConsole.InstanceManagementWorker.$PackageVersion.nupkg"  
+    DotnetPush  -PackageFileName $PackageFile       
 }
 
 function DotnetPush {
