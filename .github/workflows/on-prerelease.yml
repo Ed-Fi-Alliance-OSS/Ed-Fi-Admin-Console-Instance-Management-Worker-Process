@@ -38,10 +38,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-          
-      - name: Set Version Numbers
-        run: |
-          ls
 
       - name: Set Version Numbers
         id: versions
@@ -110,7 +106,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
           
       - name: Log in to Docker Hub
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_HUB_TOKEN }}
@@ -122,7 +118,7 @@ jobs:
           docker build -f $dockerfile -t ${{ matrix.dockerfile.name }} --build-arg="pre" .
 
       - name: Analyze
-        uses: docker/scout-action@67eb1afe777307506aaecb9acd9a0e0389cb99ae # v1.5.0
+        uses: docker/scout-action@b23590dc1e4d09febc00cfcbc51e9e8c0f7ee9f3 # v1.16.1
         with:
           command: cves
           image: local://${{ matrix.dockerfile.name }}
@@ -132,7 +128,7 @@ jobs:
       - name: Upload SARIF result
         id: upload-sarif
         if: ${{ github.event_name != 'pull_request_target' }}
-        uses: github/codeql-action/upload-sarif@cf7e9f23492505046de9a37830c3711dd0f25bb3 #codeql-bundle-v2.16.2
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 #codeql-bundle-v3.28.0
         with:
           sarif_file: sarif-${{ matrix.dockerfile.name }}.output.json
 
