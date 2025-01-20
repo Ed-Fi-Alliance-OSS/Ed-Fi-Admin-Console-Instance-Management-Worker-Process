@@ -1,0 +1,6 @@
+@AdminApiTestHarness_HostAddress = http://localhost:5053
+
+GET {{AdminApiTestHarness_HostAddress}}/adminconsole/instances
+Accept: application/json
+
+###
