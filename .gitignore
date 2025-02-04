@@ -111,6 +111,7 @@ StyleCopReport.xml
 *.svclog
 *.scc
 *.sarifs
+*.sarif
 
 # Chutzpah Test files
 _Chutzpah*
