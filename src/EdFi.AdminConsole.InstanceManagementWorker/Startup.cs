@@ -21,7 +21,9 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
     {
         public static void ConfigureAppConfiguration(string[] args, IConfigurationBuilder config)
         {
+            var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "";
             config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables("EdFi:AdminConsole:")
                 .AddCommandLine(args, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
@@ -31,8 +33,8 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
                     ["--databaseEngine"] = "AppSettings:DatabaseEngine",
                     ["--ignoresCertificateErrors"] = "AppSettings:IgnoresCertificateErrors",
                     ["--overrideExistingDatabase"] = "AppSettings:OverrideExistingDatabase",
-                    ["--key"] = "AppSettings:Source:clientId",
-                    ["--secret"] = "AppSettings:clientSecret",
+                    ["--key"] = "AdminApiSettings:ClientId",
+                    ["--secret"] = "AdminApiSettings:ClientSecret",
                 });
         }
 

@@ -2,6 +2,12 @@
     "profiles": {
         "EdFi.AdminConsole.InstanceManagementWorker": {
             "commandName": "Project"
+        },
+        "InstanceManagementWorker (Development)": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     }
 }

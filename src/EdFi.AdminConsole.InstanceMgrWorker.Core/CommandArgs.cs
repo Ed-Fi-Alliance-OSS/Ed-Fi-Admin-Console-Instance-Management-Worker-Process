@@ -29,8 +29,8 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
 
         public string Tenant { get => _configuration[Constants.TenantHeader] ?? string.Empty; }
 
-        public string ClientId { get => _configuration["clientid"] ?? "test22"; }
+        public string ClientId { get => _configuration["AdminApiSettings:ClientId"] ?? ""; }
 
-        public string ClientSecret { get => _configuration["clientsecret"] ?? "Je}d5TIrwe16ANh'6OGLyxtr(H0h39Fx"; }
+        public string ClientSecret { get => _configuration["AdminApiSettings:ClientSecret"] ?? ""; }
     }
 }
