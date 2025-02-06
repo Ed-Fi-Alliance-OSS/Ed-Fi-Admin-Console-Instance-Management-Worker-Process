@@ -22,6 +22,7 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
         public static void ConfigureAppConfiguration(string[] args, IConfigurationBuilder config)
         {
             config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("EdFi:AdminConsole:")
                 .AddCommandLine(args, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["--apiUrl"] = "AdminApiSettings:ApiUrl",
