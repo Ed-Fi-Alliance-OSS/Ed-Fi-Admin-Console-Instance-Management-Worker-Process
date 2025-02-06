@@ -11,11 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EdFi.Common" Version="5.0.0" />
     <PackageReference Include="EdFi.Ods.Common" Version="5.0.0" />
     <PackageReference Include="EdFi.Suite3.Admin.DataAccess" Version="7.4.4" />
     <PackageReference Include="EdFi.Suite3.Common" Version="7.4.296" />
-    <PackageReference Include="log4net" Version="3.0.3" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.8.0">
       <PrivateAssets>all</PrivateAssets>
@@ -33,6 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql" Version="9.0.2" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="10.6.0.109712">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
