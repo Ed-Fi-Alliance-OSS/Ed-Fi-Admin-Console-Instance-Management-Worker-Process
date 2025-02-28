@@ -102,4 +102,34 @@ public class Given_an_admin_api
             instances.First().Status.ShouldBe("Pending");
         }
     }
+
+    [TestFixture]
+    public class When_instances_are_completed : Given_an_admin_api
+    {
+        private ILogger<When_instances_are_returned_from_api> _logger;
+        private IAdminApiCaller _adminApiCaller;
+        private IAdminApiClient _adminApiClient;
+        private int instanceId = 1;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _logger = A.Fake<ILogger<When_instances_are_returned_from_api>>();
+
+            _adminApiClient = A.Fake<IAdminApiClient>();
+
+            A.CallTo(() => _adminApiClient.AdminApiPost(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURI.Replace("{InstanceId}", instanceId.ToString()), null))
+                .Returns(new ApiResponse(HttpStatusCode.OK, string.Empty));
+
+            _adminApiCaller = new AdminApiCaller(_logger, _adminApiClient, Testing.GetAdminApiSettings());
+        }
+
+        [Test]
+        public async Task should_return_successfully()
+        {
+            var result = await _adminApiCaller.CompleteInstanceAsync(1, null);
+
+            result.ShouldBe(true);
+        }
+    }
 }
