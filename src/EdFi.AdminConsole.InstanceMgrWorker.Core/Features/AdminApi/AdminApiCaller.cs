@@ -13,7 +13,11 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi;
 
 public interface IAdminApiCaller
 {
-    Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync();
+    Task<IEnumerable<AdminConsoleTenant>> GetTenantsAsync();
+
+    Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant);
+
+    Task<bool> CompleteInstanceAsync(int instanceId, string? tenant);
 }
 
 public class AdminApiCaller : IAdminApiCaller
@@ -21,21 +25,60 @@ public class AdminApiCaller : IAdminApiCaller
     private readonly ILogger _logger;
     private readonly IAdminApiClient _adminApiClient;
     private readonly IAdminApiSettings _adminApiOptions;
-    private readonly ICommandArgs _commandArgs;
 
-    public AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOptions<AdminApiSettings> adminApiOptions, ICommandArgs commandArgs)
+    public AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOptions<AdminApiSettings> adminApiOptions)
     {
         _logger = logger;
         _adminApiClient = adminApiClient;
         _adminApiOptions = adminApiOptions.Value;
-        _commandArgs = commandArgs;
     }
 
-    public async Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync()
+    public async Task<IEnumerable<AdminConsoleTenant>> GetTenantsAsync()
     {
-        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions, _commandArgs))
+        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiGet("Getting instances from Admin API - Admin Console extension");
+            var response = await _adminApiClient.AdminApiGet(_adminApiOptions.AdminConsoleTenantsURI, null);
+            var tenants = new List<AdminConsoleTenant>();
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.Content))
+            {
+                var tenantsJObject = JsonConvert.DeserializeObject<IEnumerable<JObject>>(response.Content);
+                if (tenantsJObject != null)
+                {
+                    foreach (var jObjectItem in tenantsJObject)
+                    {
+                        try
+                        {
+                            var jsonString = jObjectItem.ToString();
+                            if (jsonString.StartsWith("{{") && jsonString.EndsWith("}}"))
+                            {
+                                jsonString = jsonString.Substring(1, jsonString.Length - 2);
+                            }
+                            var tenant = JsonConvert.DeserializeObject<AdminConsoleTenant>(jsonString);
+                            if (tenant != null)
+                                tenants.Add(tenant);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, $"Not able to process tenant.");
+                        }
+                    }
+                }
+            }
+            return tenants;
+        }
+        else
+        {
+            _logger.LogError("AdminApi Settings has not been set properly.");
+            return new List<AdminConsoleTenant>();
+        }
+    }
+
+    public async Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant)
+    {
+        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
+        {
+            var response = await _adminApiClient.AdminApiGet(_adminApiOptions.AdminConsoleInstancesURI, tenant);
             var instances = new List<AdminConsoleInstance>();
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.Content))
@@ -47,7 +90,6 @@ public class AdminApiCaller : IAdminApiCaller
                     {
                         try
                         {
-
                             var jsonString = jObjectItem.ToString();
                             if (jsonString.StartsWith("{{") && jsonString.EndsWith("}}"))
                             {
@@ -70,6 +112,21 @@ public class AdminApiCaller : IAdminApiCaller
         {
             _logger.LogError("AdminApi Settings has not been set properly.");
             return new List<AdminConsoleInstance>();
+        }
+    }
+
+    public async Task<bool> CompleteInstanceAsync(int instanceId, string? tenant)
+    {
+        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
+        {
+            var response = await _adminApiClient.AdminApiPost(_adminApiOptions.AdminConsoleCompleteInstancesURI.Replace("{InstanceId}", instanceId.ToString()), tenant);
+
+            return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
+        }
+        else
+        {
+            _logger.LogError("AdminApi Settings has not been set properly.");
+            return false;
         }
     }
 }
