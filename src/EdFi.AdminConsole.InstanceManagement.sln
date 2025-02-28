@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.AdminConsole.InstanceM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.AdminConsole.InstanceMgrWorker.Core", "EdFi.AdminConsole.InstanceMgrWorker.Core\EdFi.AdminConsole.InstanceMgrWorker.Core.csproj", "{7AA0D749-D3FF-4496-8B28-612782722A80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{C8A92536-0806-4ACB-A0A2-F0E1EA2365AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstanceMgrWorker.Core.UnitTests", "InstanceMgrWorker.Core.UnitTests\InstanceMgrWorker.Core.UnitTests.csproj", "{990CF0B7-A4C8-4920-B235-888474707594}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +31,16 @@ Global
 		{7AA0D749-D3FF-4496-8B28-612782722A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AA0D749-D3FF-4496-8B28-612782722A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AA0D749-D3FF-4496-8B28-612782722A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{990CF0B7-A4C8-4920-B235-888474707594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{990CF0B7-A4C8-4920-B235-888474707594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{990CF0B7-A4C8-4920-B235-888474707594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{990CF0B7-A4C8-4920-B235-888474707594}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{990CF0B7-A4C8-4920-B235-888474707594} = {C8A92536-0806-4ACB-A0A2-F0E1EA2365AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {26E960CE-2D68-4763-A78A-1EB3DA59E723}

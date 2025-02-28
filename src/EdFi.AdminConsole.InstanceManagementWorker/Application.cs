@@ -38,56 +38,47 @@ public class Application : IApplication, IHostedService
 
     public async Task Run()
     {
-        /// Step 1. Get instances data from Admin API - Admin Console extension.
-        var instances = await _adminApiCaller.GetInstancesAsync();
-
-        if (instances == null || !instances.Any())
-        {
-            _logger.LogInformation("No instances found on Admin Api.");
-        }
-        else
-        {
-            foreach (var instance in instances)
-            {
-                /// Step 2. For each instance, Get the HealthCheck data from ODS API
-                _logger.LogInformation("Processing instance with name: {InstanceName}", instance.InstanceId.ToString() ?? "<No Name>");
-            }
-
-            _logger.LogInformation("Process completed.");
-        }
+        await CreateInstances();
     }
 
     public async Task CreateInstances()
     {
-        /// Step 1. Get instances data from Admin API - Admin Console extension.
-        /// TODO: Get instances with status != Completed or Error
-        var instances = await _adminApiCaller.GetInstancesAsync();
+        var tenants = await _adminApiCaller.GetTenantsAsync();
 
-        if (instances == null || !instances.Any())
+        foreach (var tenant in tenants)
         {
-            _logger.LogInformation("No instances found on Admin Api.");
-        }
-        else
-        {
-            var instancesNames = instances.Select(instance => instance.InstanceName).ToList();
-            foreach (var instanceName in instancesNames)
+            var instances = await _adminApiCaller.GetInstancesAsync(tenant.Document.Name);
+
+            if (instances == null || !instances.Any())
             {
-                if (!string.IsNullOrWhiteSpace(instanceName))
-                {
-                    // Checks if the instance exists or it is a new instance
-                    if (!_appSettings.OverrideExistingDatabase
-                        && await _instanceProvisioner.CheckDatabaseExists(instanceName))
-                    {
-                        // TODO: Change status: to Completed or Other because the database already exists
-                        _logger.LogInformation("Processing instance with name: {InstanceName} already exists. Skipping processing", instanceName ?? "<No Name>");
-                        continue;
-                    }
-                    _logger.LogInformation("Processing instance with name: {InstanceName}", instanceName);
-                    await _instanceProvisioner.AddDbInstanceAsync(instanceName, DbInstanceType.Minimal);
-                    // TODO: if the process is successful change the status to Completed
-                }
+                _logger.LogInformation("No instances found on Admin Api.");
             }
-            _logger.LogInformation("Process completed.");
+            else
+            {
+                foreach (var instance in instances)
+                {
+                    var instanceName = instance.InstanceName;
+
+                    if (!string.IsNullOrWhiteSpace(instanceName))
+                    {
+                        // Checks if the instance exists or it is a new instance
+                        if (!_appSettings.OverrideExistingDatabase
+                            && await _instanceProvisioner.CheckDatabaseExists(instanceName))
+                        {
+                            // TODO: Change status: to Completed or Other because the database already exists
+                            _logger.LogInformation("Processing instance with name: {InstanceName} already exists. Skipping processing", instanceName ?? "<No Name>");
+                            continue;
+                        }
+                        _logger.LogInformation("Processing instance with name: {InstanceName}", instanceName);
+
+                        await _instanceProvisioner.AddDbInstanceAsync(instanceName, DbInstanceType.Minimal);
+
+                        if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName))
+                            _logger.LogError("Not able to complete instance.");
+                    }
+                }
+                _logger.LogInformation("Process completed.");
+            }
         }
     }
 
