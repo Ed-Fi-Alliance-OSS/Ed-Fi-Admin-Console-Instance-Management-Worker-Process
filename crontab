@@ -1,0 +1,2 @@
+* * * * * root dotnet /app/EdFi.AdminConsole.InstanceManagementWorker.dll >> /var/log/acinstancesvc.log
+# TEST write Application output to acinstancesvc.log every minute
