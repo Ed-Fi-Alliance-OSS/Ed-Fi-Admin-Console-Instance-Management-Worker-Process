@@ -25,10 +25,13 @@ public static class AdminApiConnectionDataValidator
         if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleCompleteInstancesURI))
             messages.Add("AdminConsoleCompleteInstancesURI is required.");
 
+        if (string.IsNullOrEmpty(adminApiSettings.Username))
+            messages.Add("ClientId is required.");
+
         if (string.IsNullOrEmpty(adminApiSettings.ClientId))
             messages.Add("ClientId is required.");
 
-        if (string.IsNullOrEmpty(adminApiSettings.ClientSecret))
+        if (string.IsNullOrEmpty(adminApiSettings.Password))
             messages.Add("ClientSecret is required.");
 
         if (messages != null && messages.Count > 0)

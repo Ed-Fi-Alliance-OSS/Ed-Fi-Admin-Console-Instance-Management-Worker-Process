@@ -26,8 +26,9 @@ public class Given_AdminApiSettings_provided
         _adminApiSettings.AdminConsoleTenantsURI = "http://www.myserver.com/adminconsole/tenants";
         _adminApiSettings.AdminConsoleInstancesURI = "http://www.myserver.com/adminconsole/instances";
         _adminApiSettings.AdminConsoleCompleteInstancesURI = "http://www.myserver.com/adminconsole/complete";
-        _adminApiSettings.ClientId = "test";
-        _adminApiSettings.ClientSecret = "test";
+        _adminApiSettings.Username = "test-username";
+        _adminApiSettings.ClientId = "test-clientid";
+        _adminApiSettings.Password = "test-password";
     }
 
     [TestFixture]
@@ -95,6 +96,16 @@ public class Given_AdminApiSettings_provided
         }
     }
 
+    [TestFixture]
+    public class When_it_does_not_have_Username : Given_AdminApiSettings_provided
+    {
+        [Test]
+        public void should_be_invalid()
+        {
+            _adminApiSettings.Username = string.Empty;
+            AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
+        }
+    }
 
     [TestFixture]
     public class When_it_does_not_have_ClientSecret : Given_AdminApiSettings_provided
@@ -102,7 +113,7 @@ public class Given_AdminApiSettings_provided
         [Test]
         public void should_be_invalid()
         {
-            _adminApiSettings.ClientSecret = string.Empty;
+            _adminApiSettings.Password = string.Empty;
             AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
         }
     }

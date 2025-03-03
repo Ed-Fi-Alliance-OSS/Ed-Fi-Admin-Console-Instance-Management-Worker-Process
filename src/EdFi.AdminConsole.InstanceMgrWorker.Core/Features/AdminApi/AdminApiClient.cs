@@ -114,10 +114,10 @@ public class AdminApiClient : IAdminApiClient
             FormUrlEncodedContent content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
+                    new KeyValuePair<string, string>("username", _adminApiOptions.Username),
                     new KeyValuePair<string, string>("client_id", _adminApiOptions.ClientId),
-                    new KeyValuePair<string, string>("client_secret", _adminApiOptions.ClientSecret),
-                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("scope", "edfi_admin_api/full_access"),
+                    new KeyValuePair<string, string>("password", _adminApiOptions.Password),
+                    new KeyValuePair<string, string>("grant_type", "password")
                 }
             );
 

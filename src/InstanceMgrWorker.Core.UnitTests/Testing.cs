@@ -56,8 +56,9 @@ public class Testing
         adminApiSettings.AdminConsoleTenantsURI = "http://www.myserver.com/adminconsole/tenants";
         adminApiSettings.AdminConsoleInstancesURI = "http://www.myserver.com/adminconsole/instances?status=pending";
         adminApiSettings.AdminConsoleCompleteInstancesURI = "http://www.myserver.com/adminconsole/instances/{InstanceId}/completed";
-        adminApiSettings.ClientId = "test";
-        adminApiSettings.ClientSecret = "test";
+        adminApiSettings.Username = "test-username";
+        adminApiSettings.ClientId = "test-clientid";
+        adminApiSettings.Password = "test-password";
         IOptions<AdminApiSettings> options = Options.Create(adminApiSettings);
         return options;
     }
