@@ -8,8 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0.401-alpine3.20@sha256:658c93223111638f9bb5
 WORKDIR /source
 
 # Copy source code and compile the application
-COPY src/EdFi.AdminConsole.InstanceManagementWorker/. ./EdFi.AdminConsole.InstanceManagement/
-WORKDIR /source/EdFi.AdminConsole.InstanceManagement
+COPY src/. ./.
+WORKDIR /source/EdFi.AdminConsole.InstanceManagementWorker
 
 # Restore dependencies, Then build and publish release
 RUN dotnet restore &&\
