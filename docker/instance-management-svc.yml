@@ -9,7 +9,7 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
     volumes:
-      - service-logs:/var/log/acinstancesvc.log
+      - service-logs:/var/log/acinstancesvc
 
 volumes:
   service-logs:
