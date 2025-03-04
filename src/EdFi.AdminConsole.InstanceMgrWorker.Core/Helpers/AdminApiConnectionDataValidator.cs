@@ -9,30 +9,30 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core.Helpers;
 
 public static class AdminApiConnectionDataValidator
 {
-    public static bool IsValid(ILogger logger, IAdminApiSettings adminApiSettings, ICommandArgs commandArgs)
+    public static bool IsValid(ILogger logger, IAdminApiSettings adminApiSettings)
     {
         var messages = new List<string>();
-
-        if (string.IsNullOrEmpty(adminApiSettings.ApiUrl))
-            messages.Add("ApiUrl is required.");
 
         if (string.IsNullOrEmpty(adminApiSettings.AccessTokenUrl))
             messages.Add("AccessTokenUrl is required.");
 
+        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleTenantsURI))
+            messages.Add("AdminConsoleTenantsURI is required.");
+
         if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleInstancesURI))
             messages.Add("AdminConsoleInstancesURI is required.");
 
-        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleHealthCheckURI))
-            messages.Add("AdminConsoleHealthCheckURI is required.");
+        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleCompleteInstancesURI))
+            messages.Add("AdminConsoleCompleteInstancesURI is required.");
 
-        if (string.IsNullOrEmpty(commandArgs.ClientId))
+        if (string.IsNullOrEmpty(adminApiSettings.Username))
             messages.Add("ClientId is required.");
 
-        if (string.IsNullOrEmpty(commandArgs.ClientSecret))
-            messages.Add("ClientSecret is required.");
+        if (string.IsNullOrEmpty(adminApiSettings.ClientId))
+            messages.Add("ClientId is required.");
 
-        if (commandArgs.IsMultiTenant && string.IsNullOrEmpty(commandArgs.Tenant))
-            messages.Add("Tenant is required when IsMultiTenant is set true.");
+        if (string.IsNullOrEmpty(adminApiSettings.Password))
+            messages.Add("ClientSecret is required.");
 
         if (messages != null && messages.Count > 0)
         {

@@ -5,6 +5,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using EdFi.AdminConsole.InstanceMgrWorker.Core.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,9 +15,9 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi;
 
 public interface IAdminApiClient
 {
-    Task<ApiResponse> AdminApiGet(string getInfo);
+    Task<ApiResponse> AdminApiGet(string url, string? tenant);
 
-    Task<ApiResponse> AdminApiPost(StringContent content, string getInfo);
+    Task<ApiResponse> AdminApiPost(string url, string? tenant);
 }
 
 public class AdminApiClient : IAdminApiClient
@@ -24,26 +25,23 @@ public class AdminApiClient : IAdminApiClient
     private readonly IAppHttpClient _appHttpClient;
     protected readonly ILogger _logger;
     private readonly IAdminApiSettings _adminApiOptions;
-    private readonly ICommandArgs _commandArgs;
     private string _accessToken;
 
     public AdminApiClient(
         IAppHttpClient appHttpClient,
         ILogger logger,
-        IOptions<AdminApiSettings> adminApiOptions,
-        ICommandArgs commandArgs
+        IOptions<AdminApiSettings> adminApiOptions
     )
     {
         _appHttpClient = appHttpClient;
         _logger = logger;
         _adminApiOptions = adminApiOptions.Value;
-        _commandArgs = commandArgs;
         _accessToken = string.Empty;
     }
 
-    public async Task<ApiResponse> AdminApiGet(string getInfo)
+    public async Task<ApiResponse> AdminApiGet(string url, string? tenant)
     {
-        ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, string.Empty);
+        ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, "Unknown error.");
         await GetAccessToken();
 
         if (!string.IsNullOrEmpty(_accessToken))
@@ -51,12 +49,18 @@ public class AdminApiClient : IAdminApiClient
             const int RetryAttempts = 3;
             var currentAttempt = 0;
 
+            StringContent? content = null;
+            if (!string.IsNullOrEmpty(tenant))
+            {
+                content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+                content.Headers.Add("tenant", tenant);
+            }
+
             while (RetryAttempts > currentAttempt)
             {
-                response = await _appHttpClient.SendAsync(
-                    _adminApiOptions.ApiUrl + _adminApiOptions.AdminConsoleInstancesURI, //+ Constants.CompletedInstances,
+                response = await _appHttpClient.SendAsync(url,
                     HttpMethod.Get,
-                    null as StringContent,
+                    content,
                     new AuthenticationHeaderValue("bearer", _accessToken)
                 );
 
@@ -70,19 +74,25 @@ public class AdminApiClient : IAdminApiClient
         return response;
     }
 
-    public async Task<ApiResponse> AdminApiPost(StringContent content, string getInfo)
+    public async Task<ApiResponse> AdminApiPost(string url, string? tenant)
     {
-        ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, string.Empty);
+        ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, "Unknown error.");
         await GetAccessToken();
 
         const int RetryAttempts = 3;
         var currentAttempt = 0;
+
+        StringContent? content = null;
+        if (!string.IsNullOrEmpty(tenant))
+        {
+            content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+            content.Headers.Add("tenant", tenant);
+        }
+
         while (RetryAttempts > currentAttempt)
         {
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
             response = await _appHttpClient.SendAsync(
-                _adminApiOptions.ApiUrl + _adminApiOptions.AdminConsoleHealthCheckURI,
+                url,
                 HttpMethod.Post,
                 content,
                 new AuthenticationHeaderValue("bearer", _accessToken)
@@ -90,7 +100,7 @@ public class AdminApiClient : IAdminApiClient
 
             currentAttempt++;
 
-            if (response.StatusCode == HttpStatusCode.Created || response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode is HttpStatusCode.Created or HttpStatusCode.OK or HttpStatusCode.NoContent)
                 break;
         }
 
@@ -104,10 +114,10 @@ public class AdminApiClient : IAdminApiClient
             FormUrlEncodedContent content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("client_id", _commandArgs.ClientId),
-                    new KeyValuePair<string, string>("client_secret", _commandArgs.ClientSecret),
-                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("scope", "edfi_admin_api/full_access"),
+                    new KeyValuePair<string, string>("username", _adminApiOptions.Username),
+                    new KeyValuePair<string, string>("client_id", _adminApiOptions.ClientId),
+                    new KeyValuePair<string, string>("password", _adminApiOptions.Password),
+                    new KeyValuePair<string, string>("grant_type", "password")
                 }
             );
 
