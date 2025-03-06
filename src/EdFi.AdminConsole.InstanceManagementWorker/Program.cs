@@ -24,6 +24,7 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
                     .Build();
             var service = host.Services.GetRequiredService<IApplication>();
             await service.CreateInstances();
+            await service.DeleteInstances();
         }
     }
 }
