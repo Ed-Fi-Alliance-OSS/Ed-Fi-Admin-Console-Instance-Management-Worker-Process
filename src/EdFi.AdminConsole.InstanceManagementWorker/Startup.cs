@@ -27,7 +27,6 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
                 .AddEnvironmentVariables("EdFi:AdminConsole:")
                 .AddCommandLine(args, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["--apiUrl"] = "AdminApiSettings:ApiUrl",
                     ["--masterDb"] = "ConnectionStrings:EdFi_Master",
                     ["--edfiOdsDb"] = "ConnectionStrings:EdFi_Ods",
                     ["--databaseEngine"] = "AppSettings:DatabaseEngine",
@@ -56,7 +55,6 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
             services.AddTransient<IDbConnectionStringBuilderAdapter, NpgsqlConnectionStringBuilderAdapter>();
             services.AddTransient<IDatabaseNameBuilder, InstanceDatabaseNameBuilder>();
             services.AddTransient<IInstanceProvisioner, PostgresInstanceProvisioner>();
-            services.AddSingleton<ICommandArgs, CommandArgs>();
             services.AddTransient<IHttpRequestMessageBuilder, HttpRequestMessageBuilder>();
             services.AddTransient<IAdminApiClient, AdminApiClient>();
             services.AddTransient<IAdminApiCaller, AdminApiCaller>();
