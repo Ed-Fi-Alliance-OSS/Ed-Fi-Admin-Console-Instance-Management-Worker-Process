@@ -27,3 +27,14 @@ public class AdminConsoleInstance
 
     public string Status { get; set; } = string.Empty;
 }
+
+public enum InstanceStatus
+{
+    Pending,
+    Completed,
+    InProgress,
+    Pending_Delete,
+    Deleted,
+    Delete_Failed,
+    Error
+}
