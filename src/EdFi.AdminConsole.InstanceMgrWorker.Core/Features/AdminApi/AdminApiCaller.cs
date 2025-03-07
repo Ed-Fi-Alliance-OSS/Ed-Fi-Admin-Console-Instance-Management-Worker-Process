@@ -15,7 +15,7 @@ public interface IAdminApiCaller
 {
     Task<IEnumerable<AdminConsoleTenant>> GetTenantsAsync();
 
-    Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant);
+    Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant, string status = nameof(InstanceStatus.Pending));
 
     Task<bool> CompleteInstanceAsync(int instanceId, string? tenant);
 }
@@ -74,11 +74,12 @@ public class AdminApiCaller : IAdminApiCaller
         }
     }
 
-    public async Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant)
+    public async Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant, string status = nameof(InstanceStatus.Pending))
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiGet(_adminApiOptions.AdminConsoleInstancesURI, tenant);
+            var instancesURL = string.Format(_adminApiOptions.AdminConsoleInstancesURI, status);
+            var response = await _adminApiClient.AdminApiGet(instancesURL, tenant);
             var instances = new List<AdminConsoleInstance>();
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.Content))

@@ -8,6 +8,7 @@ using EdFi.AdminConsole.InstanceMgrWorker.Core;
 using EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using InstanceStatus = EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi.InstanceStatus;
 
 namespace EdFi.AdminConsole.InstanceManagementWorker;
 
@@ -85,30 +86,35 @@ public class Application : IApplication, IHostedService
 
     public async Task DeleteInstances()
     {
-        /// Step 1. Get instances data from Admin API - Admin Console extension.
-        /// TODO: Get instances with status == PENDING_DELETE
-        var instances = await _adminApiCaller.GetInstancesAsync();
 
-        if (instances == null || !instances.Any())
+        var tenants = await _adminApiCaller.GetTenantsAsync();
+        var tenantNames = tenants.Select(tenant => tenant.Document.Name).ToList();
+        foreach (var tenantName in tenantNames)
         {
-            _logger.LogInformation("No instances found on Admin Api.");
-            return;
-        }
+            /// Step 1. Get instances data from Admin API - Admin Console extension.
+            var instances = await _adminApiCaller.GetInstancesAsync(tenantName, nameof(InstanceStatus.Pending_Delete));
 
-        var instancesNames = instances.Select(instance => instance.InstanceName).ToList();
-        foreach (var instanceName in instancesNames)
-        {
-            try
+            if (instances == null || !instances.Any())
             {
-                _logger.LogInformation("Deleting instance: {InstanceName}", instanceName);
-                await _instanceProvisioner.DeleteDbInstancesAsync(instanceName);
-                _logger.LogInformation("Instance {InstanceName} deleted successfully.", instanceName);
-                /// TODO: Call POST /adminconsole/instances/{id}/deleted to mark the Instance as DELETED
+                _logger.LogInformation("No instances found on Admin Api with status == PENDING_DELETE. For Tenant {TenantName}", tenantName);
+                continue;
             }
-            catch (Exception ex)
+
+            var instancesNames = instances.Select(instance => instance.InstanceName).ToList();
+            foreach (var instanceName in instancesNames)
             {
-                _logger.LogError(ex, "Failed to delete instance: {InstanceName}", instanceName);
-                /// TODO: Call POST /adminconsole/instances/{id}/deleteFailed to mark the Instance as DELETE_FAILED
+                try
+                {
+                    _logger.LogInformation("Deleting instance: {InstanceName}", instanceName);
+                    await _instanceProvisioner.DeleteDbInstancesAsync(instanceName);
+                    _logger.LogInformation("Instance {InstanceName} deleted successfully.", instanceName);
+                    /// TODO: Call POST /adminconsole/instances/{id}/deleted to mark the Instance as DELETED
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to delete instance: {InstanceName}", instanceName);
+                    /// TODO: Call POST /adminconsole/instances/{id}/deleteFailed to mark the Instance as DELETE_FAILED
+                }
             }
         }
     }
