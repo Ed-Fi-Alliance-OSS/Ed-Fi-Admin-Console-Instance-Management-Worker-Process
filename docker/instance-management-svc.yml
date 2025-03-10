@@ -15,12 +15,12 @@ services:
       EdFi:AdminConsole:AppSettings:DefaultPageSizeLimit: 25
       EdFi:AdminConsole:AppSettings:OverrideExistingDatabase: false
       EdFi:AdminConsole:AppSettings:IgnoresCertificateErrors: true
-      EdFi:AdminConsole:ConnectionStrings:EdFi_Master: "host=localhost;port=5432;username=postgres;password=admin;database=postgres;pooling=false"
-      EdFi:AdminConsole:ConnectionStrings:EdFi_Ods: "host=localhost;port=5432;username=postgres;password=admin;database={0};pooling=false"
-      EdFi:AdminConsole:AdminApiSettings:AccessTokenUrl: "https://localhost/auth/realms/myrealm/protocol/openid-connect/token"
-      EdFi:AdminConsole:AdminApiSettings:AdminConsoleTenantsURI: "https://localhost/adminapi/adminconsole/tenants"
-      EdFi:AdminConsole:AdminApiSettings:AdminConsoleInstancesURI: "https://localhost/adminapi/adminconsole/instances?status={0}"
-      EdFi:AdminConsole:AdminApiSettings:AdminConsoleCompleteInstancesURI: "https://localhost/adminapi/adminconsole/instances/{0}/completed"
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Master: "host=host.docker.internal;port=5432;username=postgres;password=admin;database=postgres;pooling=false"
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Ods: "host=host.docker.internal;port=5432;username=postgres;password=admin;database={0};pooling=false"
+      EdFi:AdminConsole:AdminApiSettings:AccessTokenUrl: "https://host.docker.internal/auth/realms/myrealm/protocol/openid-connect/token"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleTenantsURI: "https://host.docker.internal/adminapi/adminconsole/tenants"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances?status={0}"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleCompleteInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"
       EdFi:AdminConsole:AdminApiSettings:Username: "myuser"
       EdFi:AdminConsole:AdminApiSettings:ClientId: "ac"
       EdFi:AdminConsole:AdminApiSettings:Password: "SomePassword"
