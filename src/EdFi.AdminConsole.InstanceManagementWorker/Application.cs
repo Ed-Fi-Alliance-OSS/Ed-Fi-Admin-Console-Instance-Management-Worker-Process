@@ -45,41 +45,47 @@ public class Application : IApplication, IHostedService
 
     public async Task CreateInstances()
     {
+        _logger.LogInformation("Get tenants on Admin Api.");
         var tenants = await _adminApiCaller.GetTenantsAsync();
 
-        foreach (var tenant in tenants)
+        if (!tenants.Any())
+            _logger.LogInformation("No tenants returned from Admin Api.");
+        else
         {
-            var instances = await _adminApiCaller.GetInstancesAsync(tenant.Document.Name);
+            foreach (var tenant in tenants)
+            {
+                var instances = await _adminApiCaller.GetInstancesAsync(tenant.Document.Name);
 
-            if (instances == null || !instances.Any())
-            {
-                _logger.LogInformation("No instances found on Admin Api.");
-            }
-            else
-            {
-                foreach (var instance in instances)
+                if (instances == null || !instances.Any())
                 {
-                    var instanceName = instance.InstanceName;
-
-                    if (!string.IsNullOrWhiteSpace(instanceName))
-                    {
-                        // Checks if the instance exists or it is a new instance
-                        if (!_appSettings.OverrideExistingDatabase
-                            && await _instanceProvisioner.CheckDatabaseExists(instanceName))
-                        {
-                            // TODO: Change status: to Completed or Other because the database already exists
-                            _logger.LogInformation("Processing instance with name: {InstanceName} already exists. Skipping processing", instanceName ?? "<No Name>");
-                            continue;
-                        }
-                        _logger.LogInformation("Processing instance with name: {InstanceName}", instanceName);
-
-                        await _instanceProvisioner.AddDbInstanceAsync(instanceName, DbInstanceType.Minimal);
-
-                        if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName))
-                            _logger.LogError("Not able to complete instance.");
-                    }
+                    _logger.LogInformation("No instances found on Admin Api.");
                 }
-                _logger.LogInformation("Process completed.");
+                else
+                {
+                    foreach (var instance in instances)
+                    {
+                        var instanceName = instance.InstanceName;
+
+                        if (!string.IsNullOrWhiteSpace(instanceName))
+                        {
+                            // Checks if the instance exists or it is a new instance
+                            if (!_appSettings.OverrideExistingDatabase
+                                && await _instanceProvisioner.CheckDatabaseExists(instanceName))
+                            {
+                                // TODO: Change status: to Completed or Other because the database already exists
+                                _logger.LogInformation("Processing instance with name: {InstanceName} already exists. Skipping processing", instanceName ?? "<No Name>");
+                                continue;
+                            }
+                            _logger.LogInformation("Processing instance with name: {InstanceName}", instanceName);
+
+                            await _instanceProvisioner.AddDbInstanceAsync(instanceName, DbInstanceType.Minimal);
+
+                            if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName))
+                                _logger.LogError("Not able to complete instance.");
+                        }
+                    }
+                    _logger.LogInformation("Process completed.");
+                }
             }
         }
     }

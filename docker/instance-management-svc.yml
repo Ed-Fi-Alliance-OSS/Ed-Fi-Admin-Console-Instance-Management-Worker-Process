@@ -8,9 +8,54 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
+    environment:
+      EdFi:AdminConsole:AppSettings:DatabaseEngine: Postgresql
+      EdFi:AdminConsole:AppSettings:PathBase: ""
+      EdFi:AdminConsole:AppSettings:DefaultPageSizeOffset: 0
+      EdFi:AdminConsole:AppSettings:DefaultPageSizeLimit: 25
+      EdFi:AdminConsole:AppSettings:OverrideExistingDatabase: false
+      EdFi:AdminConsole:AppSettings:IgnoresCertificateErrors: true
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Master: "host=host.docker.internal;port=5432;username=postgres;password=admin;database=postgres;pooling=false"
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Ods: "host=host.docker.internal;port=5432;username=postgres;password=admin;database={0};pooling=false"
+      EdFi:AdminConsole:AdminApiSettings:AccessTokenUrl: "https://host.docker.internal/auth/realms/myrealm/protocol/openid-connect/token"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleTenantsURI: "https://host.docker.internal/adminapi/adminconsole/tenants"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances?status={0}"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleCompleteInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"
+      EdFi:AdminConsole:AdminApiSettings:Username: "myuser"
+      EdFi:AdminConsole:AdminApiSettings:ClientId: "ac"
+      EdFi:AdminConsole:AdminApiSettings:Password: "SomePassword"
+      EdFi:AdminConsole:DatabaseProvider: "Npgsql"
     volumes:
       - service-logs:/var/log/acinstancesvc
-
+  
+  pg-service:
+    container_name: pg-13-alpine
+    image: postgres:13-alpine
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "postgres"
+      PG_PORT: 5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+       
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - pg-service
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+ 
 volumes:
+  postgres-data:
+    name: postgres-data
   service-logs:
     name: instance-management-service-logs

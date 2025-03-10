@@ -31,16 +31,11 @@ On this file, on the AdminApiSettings section, you will have something like
 
 ### Postgres up and running
 
-Instance-Management-Worker-Process works just with Postgres for the moment, so you need Postgres running. This is where Instance-Management-Worker-Process will create the instance database when an Admin Console instance is completed.
-
-To setup Postgres on you Docker, you can use this (file)[https://edfi.atlassian.net/wiki/spaces/BD/pages/22041258/update+local+development+-+Postgres+13]
-Although you can setup Postgres using any method you want, you just need Postgres running.
+`instance-management-svc.yml` includes Postgres.
 
 In this Postgres installation you need a database with this name: Ods_Minimal_Template. In the real world this is an ods database, although you can use for now an empty one.
 And on this database, run this script: `ALTER DATABASE your_database_name IS_TEMPLATE true;` to make it a template database.
 Using this database template, Instance-Management-Worker-Process will create the ods instance database.
-
-Make sure you review and setup the `ConnectionStrings` on the `appSettings.json` file 
 
 ### Using the CreateOdsInstance.http
 

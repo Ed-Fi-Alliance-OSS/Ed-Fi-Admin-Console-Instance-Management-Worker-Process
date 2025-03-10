@@ -118,7 +118,7 @@ public class Given_an_admin_api
 
             _adminApiClient = A.Fake<IAdminApiClient>();
 
-            A.CallTo(() => _adminApiClient.AdminApiPost(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURI.Replace("{InstanceId}", instanceId.ToString()), null))
+            A.CallTo(() => _adminApiClient.AdminApiPost(string.Format(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURI, instanceId), null))
                 .Returns(new ApiResponse(HttpStatusCode.OK, string.Empty));
 
             _adminApiCaller = new AdminApiCaller(_logger, _adminApiClient, Testing.GetAdminApiSettings());
