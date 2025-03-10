@@ -120,7 +120,7 @@ public class AdminApiCaller : IAdminApiCaller
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiPost(_adminApiOptions.AdminConsoleCompleteInstancesURI.Replace("{InstanceId}", instanceId.ToString()), tenant);
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURI, instanceId), tenant);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }

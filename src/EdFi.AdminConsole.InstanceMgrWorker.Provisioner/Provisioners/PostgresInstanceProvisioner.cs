@@ -8,15 +8,22 @@ using Dapper;
 using EdFi.Admin.DataAccess.Utils;
 using EdFi.Ods.Common.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
     public class PostgresInstanceProvisioner : InstanceProvisionerBase
     {
-        public PostgresInstanceProvisioner(IConfiguration configuration,
+        private readonly ILogger _logger;
+
+        public PostgresInstanceProvisioner(
+        ILogger logger, IConfiguration configuration,
             IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
-            : base(configuration, connectionStringsProvider, databaseNameBuilder) { }
+            : base(configuration, connectionStringsProvider, databaseNameBuilder)
+        {
+            _logger = logger;
+        }
 
         public override async Task RenameDbInstancesAsync(string oldName, string newName)
         {
@@ -53,6 +60,12 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 
         public override async Task CopyDbInstanceAsync(string originalDatabaseName, string newDatabaseName)
         {
+            var s1 = $"newDatabaseName. {newDatabaseName}";
+            _logger.LogInformation(s1);
+
+            var s2 = $"originalDatabaseName. {originalDatabaseName}";
+            _logger.LogInformation(s2);
+
             using (var conn = CreateConnection())
             {
                 string sql = @$"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{originalDatabaseName}';";

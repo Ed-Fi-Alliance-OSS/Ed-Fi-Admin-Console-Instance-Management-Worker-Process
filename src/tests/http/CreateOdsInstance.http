@@ -14,13 +14,13 @@ grant_type=password&username=myuser&password=SomePassword&client_id=ac
 # @name adminConsoleInstance
 POST https://localhost/adminapi/adminconsole/odsInstances
 Content-Type: application/json
+tenant: tenant1
 {{auth_header_admin_token}}
-Tenant: tenant1
 
 {
   "tenantId": 1,
   "tenantName": "tenant1",
-  "name": "Instancetest1",
+  "name": "Instance4",
   "instanceType": "enterprise",
   "odsInstanceContexts": [
     {
@@ -35,26 +35,39 @@ Tenant: tenant1
   ]
 }
 
-### Get pending instances
+### Get tenants
+# @name pendingInstances
+GET https://localhost/adminapi/adminconsole/tenants
+{{auth_header_admin_token}}
+
+### Get all ODS instances
+# @name allOdsInstances
+GET https://localhost/adminapi/adminconsole/odsInstances
+{{auth_header_admin_token}}
+
+### Get pending ODS instances
 # @name pendingOdsInstances
 GET https://localhost/adminapi/adminconsole/odsInstances?status=pending
 {{auth_header_admin_token}}
-Tenant: tenant1
 
-### Get completed instances
+### Get completed ODS instances
 # @name completedOdsInstances
 GET https://localhost/adminapi/adminconsole/odsInstances?status=completed
 {{auth_header_admin_token}}
-Tenant: tenant1
 
-### Get pending instances
+
+### Get all instances
+# @name allInstances
+GET https://localhost/adminapi/adminconsole/instances
+{{auth_header_admin_token}}
+
+### Get pending ODS instances
 # @name pendingInstances
-GET https://localhost/adminapi/adminconsole/Instances?status=pending
+GET https://localhost/adminapi/adminconsole/instances?status=pending
 {{auth_header_admin_token}}
-Tenant: tenant1
 
-### Get completed instances
+### Get completed ODS instances
 # @name completedInstances
-GET https://localhost/adminapi/adminconsole/Instances?status=completed
+GET https://localhost/adminapi/adminconsole/instances?status=completed
 {{auth_header_admin_token}}
-Tenant: tenant1
+
