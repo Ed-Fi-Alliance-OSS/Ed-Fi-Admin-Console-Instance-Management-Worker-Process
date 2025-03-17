@@ -1,0 +1,5 @@
+# TEST write Application output to acinstancesvc/datetime.log every ten minutes
+*/10 * * * * dotnet /app/EdFi.AdminConsole.InstanceManagementWorker.dll >> /var/log/acinstancesvc/"`date +%Y-%m-%d_%H%M`".log
+# TEST write Application output for docker console
+*/10 * * * * echo "EdFi.AdminConsole.InstanceManagementWorker.dll executed every ten minutes for more details see /var/log/achealthsvc/"
+

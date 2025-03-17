@@ -8,8 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0.401-alpine3.20@sha256:658c93223111638f9bb5
 WORKDIR /source
 
 # Copy source code and compile the application
-COPY src/EdFi.AdminConsole.InstanceManagementWorker/. ./EdFi.AdminConsole.InstanceManagement/
-WORKDIR /source/EdFi.AdminConsole.InstanceManagement
+COPY src/. ./.
+WORKDIR /source/EdFi.AdminConsole.InstanceManagementWorker
 
 # Restore dependencies, Then build and publish release
 RUN dotnet restore &&\
@@ -17,8 +17,17 @@ RUN dotnet restore &&\
 
 # .NET Runtime image to execute the application
 FROM mcr.microsoft.com/dotnet/runtime:8.0.11-alpine3.20-amd64@sha256:6970cb2d1f8ba6e87d49cfb35687106f0b80c874171978b60d8962daaa8e097f AS runtime
+
+# Add cron from file and adjust permissions
+COPY crontab /etc/cron.d/container_cronjob
+
+RUN chmod 0644 /etc/cron.d/container_cronjob &&\
+    crontab /etc/cron.d/container_cronjob
+
 WORKDIR /app
+
+# Add Published Executable
 COPY --from=build /app .
 
-# Execute the app
-ENTRYPOINT ["dotnet", "EdFi.AdminConsole.InstanceManagementWorker.dll"]
+# Execute the app via chron
+CMD ["crond", "-f"]
