@@ -83,17 +83,19 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
         }
         private static HttpClientHandler IgnoresCertificateErrorsHandler()
         {
-            var handler = new HttpClientHandler();
-            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-            handler.ServerCertificateCustomValidationCallback = (
-                httpRequestMessage,
-                cert,
-                cetChain,
-                policyErrors
-            ) =>
+            var handler = new HttpClientHandler
             {
-                return true;
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
+                ServerCertificateCustomValidationCallback = (
+                    httpRequestMessage,
+                    cert,
+                    cetChain,
+                    policyErrors
+                ) =>
+                {
+                    return true;
+                }
             };
 #pragma warning restore S4830
 
