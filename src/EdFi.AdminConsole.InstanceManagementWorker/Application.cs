@@ -44,13 +44,13 @@ public class Application(
             _logger.LogInformation("No tenants returned from Admin Api.");
         else
         {
-            foreach (var tenant in tenants)
+            foreach (var tenantName in tenants.Select(tenant => tenant.Document.Name))
             {
-                var instances = await _adminApiCaller.GetInstancesAsync(tenant.Document.Name);
+                var instances = await _adminApiCaller.GetInstancesAsync(tenantName);
 
                 if (instances == null || !instances.Any())
                 {
-                    _logger.LogInformation("No instances found on Admin Api.");
+                    _logger.LogInformation("No instances found on Admin Api for tenant {TenantName}", tenantName);
                 }
                 else
                 {
