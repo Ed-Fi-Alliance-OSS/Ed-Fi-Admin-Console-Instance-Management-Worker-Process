@@ -19,24 +19,16 @@ public interface IApplication
     Task Run();
 }
 
-public class Application : IApplication, IHostedService
+public class Application(
+    ILogger logger,
+    IAdminApiCaller adminApiCaller,
+    IInstanceProvisioner instanceProvisioner,
+    IAppSettings appSettings) : IApplication, IHostedService
 {
-    private readonly ILogger _logger;
-    private readonly IAdminApiCaller _adminApiCaller;
-    private readonly IInstanceProvisioner _instanceProvisioner;
-    private readonly IAppSettings _appSettings;
-
-    public Application(
-        ILogger logger,
-        IAdminApiCaller adminApiCaller,
-        IInstanceProvisioner instanceProvisioner,
-        IAppSettings appSettings)
-    {
-        _logger = logger;
-        _adminApiCaller = adminApiCaller;
-        _instanceProvisioner = instanceProvisioner;
-        _appSettings = appSettings;
-    }
+    private readonly ILogger _logger = logger;
+    private readonly IAdminApiCaller _adminApiCaller = adminApiCaller;
+    private readonly IInstanceProvisioner _instanceProvisioner = instanceProvisioner;
+    private readonly IAppSettings _appSettings = appSettings;
 
     public async Task Run()
     {
@@ -52,13 +44,13 @@ public class Application : IApplication, IHostedService
             _logger.LogInformation("No tenants returned from Admin Api.");
         else
         {
-            foreach (var tenant in tenants)
+            foreach (var tenantName in tenants.Select(tenant => tenant.Document.Name))
             {
-                var instances = await _adminApiCaller.GetInstancesAsync(tenant.Document.Name);
+                var instances = await _adminApiCaller.GetInstancesAsync(tenantName);
 
                 if (instances == null || !instances.Any())
                 {
-                    _logger.LogInformation("No instances found on Admin Api.");
+                    _logger.LogInformation("No instances found on Admin Api for tenant {TenantName}", tenantName);
                 }
                 else
                 {

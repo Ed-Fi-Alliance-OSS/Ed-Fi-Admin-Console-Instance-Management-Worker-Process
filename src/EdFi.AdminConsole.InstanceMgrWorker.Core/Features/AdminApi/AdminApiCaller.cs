@@ -20,18 +20,11 @@ public interface IAdminApiCaller
     Task<bool> CompleteInstanceAsync(int instanceId, string? tenant);
 }
 
-public class AdminApiCaller : IAdminApiCaller
+public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOptions<AdminApiSettings> adminApiOptions) : IAdminApiCaller
 {
-    private readonly ILogger _logger;
-    private readonly IAdminApiClient _adminApiClient;
-    private readonly IAdminApiSettings _adminApiOptions;
-
-    public AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOptions<AdminApiSettings> adminApiOptions)
-    {
-        _logger = logger;
-        _adminApiClient = adminApiClient;
-        _adminApiOptions = adminApiOptions.Value;
-    }
+    private readonly ILogger _logger = logger;
+    private readonly IAdminApiClient _adminApiClient = adminApiClient;
+    private readonly AdminApiSettings _adminApiOptions = adminApiOptions.Value;
 
     public async Task<IEnumerable<AdminConsoleTenant>> GetTenantsAsync()
     {
@@ -52,7 +45,7 @@ public class AdminApiCaller : IAdminApiCaller
                             var jsonString = jObjectItem.ToString();
                             if (jsonString.StartsWith("{{") && jsonString.EndsWith("}}"))
                             {
-                                jsonString = jsonString.Substring(1, jsonString.Length - 2);
+                                jsonString = jsonString[1..^1];
                             }
                             var tenant = JsonConvert.DeserializeObject<AdminConsoleTenant>(jsonString);
                             if (tenant != null)
@@ -94,7 +87,7 @@ public class AdminApiCaller : IAdminApiCaller
                             var jsonString = jObjectItem.ToString();
                             if (jsonString.StartsWith("{{") && jsonString.EndsWith("}}"))
                             {
-                                jsonString = jsonString.Substring(1, jsonString.Length - 2);
+                                jsonString = jsonString[1..^1];
                             }
                             var instance = JsonConvert.DeserializeObject<AdminConsoleInstance>(jsonString);
                             if (instance != null)
