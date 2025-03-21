@@ -7,11 +7,11 @@ using EdFi.Ods.Common.Configuration;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
-    public class InstanceDatabaseEngineProvider : IDatabaseEngineProvider
+    public class PostgresDatabaseEngineProvider : IDatabaseEngineProvider
     {
         public DatabaseEngine DatabaseEngine { get; }
 
-        public InstanceDatabaseEngineProvider(IConfigConnectionStringsProvider connectionStringsProvider)
+        public PostgresDatabaseEngineProvider(IConfigConnectionStringsProvider connectionStringsProvider)
         {
             DatabaseEngine = DatabaseEngine.CreateFromProviderName("Npgsql");
         }

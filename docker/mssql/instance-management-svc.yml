@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+services:
+  instance-management-service:
+    build:
+      context: ../../
+      dockerfile: docker/mssql/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      EdFi:AdminConsole:AppSettings__DatabaseEngine: SqlServer
+      EdFi:AdminConsole:AppSettings:PathBase: ""
+      EdFi:AdminConsole:AppSettings:DefaultPageSizeOffset: 0
+      EdFi:AdminConsole:AppSettings:DefaultPageSizeLimit: 25
+      EdFi:AdminConsole:AppSettings:OverrideExistingDatabase: false
+      EdFi:AdminConsole:AppSettings:IgnoresCertificateErrors: true
+      EdFi:AdminConsole:AppSettings:SqlServerBacFile: "./../tmp/Ods_Minimal_Template.bak"
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Master: "Data Source=host.docker.internal;Initial Catalog=master;User ID=sa;Password=1StrongPwd!!;Trusted_Connection=true;Encrypt=True;TrustServerCertificate=True"
+      EdFi:AdminConsole:ConnectionStrings:EdFi_Ods: "Data Source=host.docker.internal;Initial Catalog={0};User ID=sa;Password=1StrongPwd!!;Trusted_Connection=true;Encrypt=True;TrustServerCertificate=True"
+      EdFi:AdminConsole:AdminApiSettings:AccessTokenUrl: "https://host.docker.internal/auth/realms/edfi-admin-console/protocol/openid-connect/token"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleTenantsURI: "https://host.docker.internal/adminapi/adminconsole/tenants"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances?status={0}"
+      EdFi:AdminConsole:AdminApiSettings:AdminConsoleCompleteInstancesURI: "https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"
+      EdFi:AdminConsole:AdminApiSettings__Username: "adminconsole-user"
+      EdFi:AdminConsole:AdminApiSettings:ClientId: "admin-console"
+      EdFi:AdminConsole:AdminApiSettings:Password: "SomePassword"
+      EdFi:AdminConsole:DatabaseProvider: "System.Data.SqlClient"
+    volumes:
+      - service-logs:/var/log/acinstancesvc
+  
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=1StrongPwd!!
+      - MSSQL_PID=Developer
+    user: root
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: always
+    
+volumes:
+  sqlserver_data:
+    name: sqlserver_data
+  service-logs:
+    name: instance-management-service-logs
