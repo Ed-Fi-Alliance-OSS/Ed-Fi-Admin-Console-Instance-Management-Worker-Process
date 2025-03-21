@@ -37,6 +37,8 @@ public class Application(
 
     public async Task CreateInstances()
     {
+        var mm = $"DB Engine: ********************************** {_appSettings.DatabaseEngine}";
+        _logger.LogInformation(mm);
         _logger.LogInformation("Get tenants on Admin Api.");
         var tenants = await _adminApiCaller.GetTenantsAsync();
 
@@ -84,7 +86,6 @@ public class Application(
 
     public async Task DeleteInstances()
     {
-
         var tenants = await _adminApiCaller.GetTenantsAsync();
         var tenantNames = tenants.Select(tenant => tenant.Document.Name).ToList();
         foreach (var tenantName in tenantNames)

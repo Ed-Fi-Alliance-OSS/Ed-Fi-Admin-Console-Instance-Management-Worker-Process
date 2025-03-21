@@ -7,13 +7,17 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
 {
     public interface IAppSettings
     {
+        string DatabaseEngine { get; set; }
         bool IgnoresCertificateErrors { get; set; }
         bool OverrideExistingDatabase { get; set; }
+        string SqlServerBacFile { get; set; }
     }
 
     public sealed class AppSettings : IAppSettings
     {
+        public string DatabaseEngine { get; set; } = string.Empty;
         public bool IgnoresCertificateErrors { get; set; } = false;
         public bool OverrideExistingDatabase { get; set; } = false;
+        public string SqlServerBacFile { get; set; } = string.Empty;
     }
 }
