@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+services:
+  instance-management-service:
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfile
+    environment:
+      EdFi:AdminConsole:AppSettings__DatabaseEngine: ${DatabaseEngine:-PostgreSQL}
+      EdFi:AdminConsole:AppSettings__PathBase: ${PathBase:-""}
+      EdFi:AdminConsole:AppSettings__DefaultPageSizeOffset: 0
+      EdFi:AdminConsole:AppSettings__DefaultPageSizeLimit: 25
+      EdFi:AdminConsole:AppSettings__OverrideExistingDatabase: ${OverrideExistingDatabase:-false}
+      EdFi:AdminConsole:AppSettings__IgnoresCertificateErrors: ${IgnoresCertificateErrors:-true}
+      EdFi:AdminConsole:ConnectionStrings__EdFi_Master: ${EdFi_Master:-host=host.docker.internal;port=5432;username=postgres;password=admin;database=postgres;pooling=false}
+      EdFi:AdminConsole:ConnectionStrings__EdFi_Ods: ${EdFi_Ods:-host=host.docker.internal;port=5432;username=postgres;password=admin;database={0};pooling=false}
+      EdFi:AdminConsole:AdminApiSettings__AccessTokenUrl: ${AccessTokenUrl:-https://host.docker.internal/auth/realms/edfi-admin-console/protocol/openid-connect/token}
+      EdFi:AdminConsole:AdminApiSettings__AdminConsoleTenantsURL: ${AdminConsoleTenantsURL:-https://host.docker.internal/adminapi/adminconsole/tenants}
+      EdFi:AdminConsole:AdminApiSettings__AdminConsoleInstancesURL: ${AdminConsoleInstancesURL:-https://host.docker.internal/adminapi/adminconsole/instances?status={0}}
+      EdFi:AdminConsole:AdminApiSettings__AdminConsoleCompleteInstancesURL: ${AdminConsoleCompleteInstancesURL:-https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed}
+      EdFi:AdminConsole:AdminApiSettings__Username: ${Username:-adminconsole-user}
+      EdFi:AdminConsole:AdminApiSettings__ClientId: ${ClientId:-admin-console}
+      EdFi:AdminConsole:AdminApiSettings__Password: ${Password:-SomePassword}
+      EdFi:AdminConsole:DatabaseProvider: ${DatabaseProvider:-Npgsql} 
+    volumes:
+      - service-logs:/var/log/acinstancesvc
+  
+  pg-service:
+    container_name: pg-13-alpine
+    image: postgres:13-alpine
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "postgres"
+      PG_PORT: 5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+       
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - pg-service
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+ 
+volumes:
+  postgres-data:
+    name: postgres-data
+  service-logs:
+    name: instance-management-service-logs

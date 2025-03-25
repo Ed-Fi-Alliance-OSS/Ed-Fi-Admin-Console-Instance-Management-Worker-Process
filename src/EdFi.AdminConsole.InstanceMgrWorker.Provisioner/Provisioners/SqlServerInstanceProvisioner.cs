@@ -3,30 +3,29 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System.Data.Common;
+using System.Runtime.InteropServices;
 using Dapper;
 using EdFi.Admin.DataAccess.Utils;
-using log4net;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Data.Common;
-using Microsoft.Data.SqlClient;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using EdFi.Ods.Common.Configuration;
-using Microsoft.CodeAnalysis.FlowAnalysis;
+using log4net;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners;
-
 
 public class SqlServerInstanceProvisioner : InstanceProvisionerBase
 {
     private readonly ILog _logger = LogManager.GetLogger(typeof(SqlServerInstanceProvisioner));
     private SqlServerHostPlatform? _sqlServerHostPlatform;
+    private readonly string _sqlServerBacFile;
 
     public SqlServerInstanceProvisioner(IConfiguration configuration,
             IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
-            : base(configuration, connectionStringsProvider, databaseNameBuilder) { }
+            : base(configuration, connectionStringsProvider, databaseNameBuilder)
+    {
+        _sqlServerBacFile = configuration.GetSection("AppSettings:SqlServerBacFile").Value ?? string.Empty;
+    }
 
     public override async Task<bool> CheckDatabaseExists(string instanceName)
     {
@@ -34,7 +33,7 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
         {
             var results = await conn.QueryAsync<string>(
                     $"SELECT name FROM sys.databases WHERE name like @DbName;",
-                    new { DbName = _databaseNameBuilder.SandboxNameForKey("%") }, commandTimeout: CommandTimeout)
+                    new { DbName = _databaseNameBuilder.SandboxNameForKey(instanceName) }, commandTimeout: CommandTimeout)
                 .ConfigureAwait(false);
 
             return (results?.ToArray().Length ?? 0) > 0;
@@ -49,32 +48,23 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
             {
                 await conn.OpenAsync();
 
-                string backupDirectory = await GetBackupDirectoryAsync()
-                    .ConfigureAwait(false);
-
-                string message = $"backup directory = {backupDirectory}";
+                string message = $"backup directory = {_sqlServerBacFile}";
                 _logger.Debug(message);
 
-                string backup = await PathCombine(backupDirectory, originalDatabaseName + ".bak");
-                string message1 = $"backup file = {backup}";
+                string backup = _sqlServerBacFile;
+
+                string message1 = $"backup file = {_sqlServerBacFile}";
                 _logger.Debug(message1);
 
-                var sqlFileInfo = await GetDatabaseFilesAsync(originalDatabaseName, newDatabaseName)
+                var sqlFileInfo = await GetDatabaseFilesAsync(newDatabaseName)
                     .ConfigureAwait(false);
 
-                await BackUpAndRestoreSandbox()
+                await Restore()
                     .ConfigureAwait(false);
 
                 // NOTE: these helper functions are using the same connection now.
-                async Task BackUpAndRestoreSandbox()
+                async Task Restore()
                 {
-                    string message2 = $"backing up {originalDatabaseName} to file {backup}";
-                    _logger.Debug(message2);
-
-                    await conn.ExecuteAsync(
-                        $@"BACKUP DATABASE [{originalDatabaseName}] TO DISK = '{backup}' WITH INIT;",
-                        commandTimeout: CommandTimeout).ConfigureAwait(false);
-
                     string logicalNameForRows = "", logicalNameForLog = "";
 
                     string message3 = $"restoring files from {backup}.";
@@ -110,7 +100,6 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
                             $@"RESTORE DATABASE [{newDatabaseName}] FROM DISK = '{backup}' WITH REPLACE, MOVE '{logicalNameForRows}' TO '{sqlFileInfo.Data}', MOVE '{logicalNameForLog}' TO '{sqlFileInfo.Log}';", commandTimeout: CommandTimeout)
                         .ConfigureAwait(false);
 
-
                     var changeLogicalDataName = $"ALTER DATABASE[{newDatabaseName}] MODIFY FILE(NAME='{logicalNameForRows}', NEWNAME='{newDatabaseName}')";
                     await conn.ExecuteAsync(changeLogicalDataName, commandTimeout: CommandTimeout)
                               .ConfigureAwait(false);
@@ -120,70 +109,48 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
                               .ConfigureAwait(false);
                 }
 
-                async Task<string> GetBackupDirectoryAsync()
+                async Task<SqlFileInfo> GetDatabaseFilesAsync(string newName)
                 {
-                    return await GetSqlRegistryValueAsync(
-                            @"HKEY_LOCAL_MACHINE", @"Software\Microsoft\MSSQLServer\MSSQLServer", @"BackupDirectory")
-                        .ConfigureAwait(false);
-                }
+                    var hostPlatform = await GetSqlServerHostPlatform();
 
-                async Task<string> GetSqlRegistryValueAsync(string subtree, string folder, string key)
-                {
-                    var sql = $@"EXEC master.dbo.xp_instance_regread N'{subtree}', N'{folder}',N'{key}'";
-                    string path = "";
-
-                    using (var cmd = conn.CreateCommand())
+                    if (hostPlatform == null)
+                        throw new InvalidOperationException();
+                    else
                     {
-                        cmd.CommandText = sql;
-                        cmd.CommandTimeout = CommandTimeout;
-
-                        string message2 = $"running stored procedure = {sql}";
-                        _logger.Debug(message2);
-
-                        using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        if (hostPlatform.OsPlatform.Equals(OSPlatform.Windows))
                         {
-                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            var sqlData = $"SELECT physical_name AS DefaultDataPath FROM sys.master_files WHERE type = {(int)DataPathType.Data} AND database_id = 1;";
+                            var sqlLog = $"SELECT physical_name AS DefaultLogPath FROM sys.master_files WHERE type = {(int)DataPathType.Log} AND database_id = 1;";
+
+                            string? fullPathData = await conn.ExecuteScalarAsync<string>(sqlData, commandTimeout: CommandTimeout)
+                                .ConfigureAwait(false);
+
+                            string? fullPathLog = await conn.ExecuteScalarAsync<string>(sqlLog, commandTimeout: CommandTimeout)
+                                .ConfigureAwait(false);
+
+                            return new SqlFileInfo
                             {
-                                path = reader.GetString(1);
-                            }
+                                Data = fullPathData?.Replace("master", newName),
+                                Log = fullPathLog?.Replace("mastlog", $"{newName}_Log"),
+                            };
                         }
+                        else if (hostPlatform.OsPlatform.Equals(OSPlatform.Linux))
+                        {
+                            return new SqlFileInfo
+                            {
+                                Data = $"/var/opt/mssql/data/{newName}.mdf",
+                                Log = $"/var/opt/mssql/data/{newName}.ldf"
+                            };
+                        }
+                        else
+                            throw new InvalidOperationException();
                     }
-
-                    string message3 = $"path from registry = {path}";
-                    _logger.Debug(message3);
-                    return path;
-                }
-
-                async Task<SqlFileInfo> GetDatabaseFilesAsync(string originalName, string newName)
-                {
-                    string dataPath = await GetSqlDataPathAsync(originalName, DataPathType.Data).ConfigureAwait(false);
-                    string logPath = await GetSqlDataPathAsync(originalName, DataPathType.Log).ConfigureAwait(false);
-
-                    return new SqlFileInfo
-                    {
-                        Data = await PathCombine(dataPath, $"{newName}.mdf"),
-                        Log = await PathCombine(logPath, $"{newName}.ldf")
-                    };
-                }
-
-                async Task<string> GetSqlDataPathAsync(string originalName, DataPathType dataPathType)
-                {
-                    var type = (int)dataPathType;
-
-                    // Since we know we have an existing database, use its data file location to figure out where to put new databases
-                    var sql =
-                        $"use [{originalName}];DECLARE @default_data_path nvarchar(1000);DECLARE @sqlexec nvarchar(200);SET @sqlexec = N'select TOP 1 @data_path=physical_name from sys.database_files where type={type};';EXEC sp_executesql @sqlexec, N'@data_path nvarchar(max) OUTPUT',@data_path = @default_data_path OUTPUT;SELECT @default_data_path;";
-
-                    string? fullPath = await conn.ExecuteScalarAsync<string>(sql, commandTimeout: CommandTimeout)
-                        .ConfigureAwait(false);
-
-                    return await GetDirectoryName(fullPath);
                 }
             }
             catch (Exception e)
             {
                 _logger.Error(e);
-                throw;
+                throw new Exception(e.Message);
             }
         }
     }
@@ -255,60 +222,6 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
         }
 
         return _sqlServerHostPlatform;
-    }
-
-    private async Task<string> PathCombine(string path1, string path2)
-    {
-        var hostPlatform = await GetSqlServerHostPlatform();
-
-        // Based on https://github.com/mono/mono/blob/main/mcs/class/corlib/System.IO/Path.cs#L99
-
-        if (path1.Length == 0)
-            return path2;
-
-        if (path2.Length == 0)
-            return path1;
-
-        char p1end = path1[path1.Length - 1];
-        if (p1end != hostPlatform.DirectorySeparatorChar && p1end != hostPlatform.VolumeSeparatorChar)
-            return path1 + hostPlatform.DirectorySeparatorChar + path2;
-
-        return path1 + path2;
-    }
-
-    private async Task<string> GetDirectoryName(string? path)
-    {
-        var hostPlatform = await GetSqlServerHostPlatform();
-
-        // Based on: https://github.com/mono/mono/blob/main/mcs/class/corlib/System.IO/Path.cs#L203
-
-        int nLast = !string.IsNullOrEmpty(path) ? path.LastIndexOf(hostPlatform.DirectorySeparatorChar) : 0;
-        if (nLast == 0)
-            nLast++;
-
-        if (nLast > 0)
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                string ret = path.Substring(0, nLast);
-                int l = ret.Length;
-
-                if (l >= 2 && hostPlatform.DirectorySeparatorChar == '\\' && ret[l - 1] == hostPlatform.VolumeSeparatorChar)
-                    return ret + hostPlatform.DirectorySeparatorChar;
-                else if (l == 1 && hostPlatform.DirectorySeparatorChar == '\\' && path.Length >= 2 && path[nLast] == hostPlatform.VolumeSeparatorChar)
-                    return ret + hostPlatform.VolumeSeparatorChar;
-                else
-                {
-                    return ret;
-                }
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-
-        return String.Empty;
     }
 
     private sealed class SqlFileInfo

@@ -23,9 +23,9 @@ public class Given_AdminApiSettings_provided
         _logger = A.Fake<ILogger<Given_AdminApiSettings_provided>>();
 
         _adminApiSettings.AccessTokenUrl = "http://www.myserver.com/token";
-        _adminApiSettings.AdminConsoleTenantsURI = "http://www.myserver.com/adminconsole/tenants";
-        _adminApiSettings.AdminConsoleInstancesURI = "http://www.myserver.com/adminconsole/instances";
-        _adminApiSettings.AdminConsoleCompleteInstancesURI = "http://www.myserver.com/adminconsole/complete";
+        _adminApiSettings.AdminConsoleTenantsURL = "http://www.myserver.com/adminconsole/tenants";
+        _adminApiSettings.AdminConsoleInstancesURL = "http://www.myserver.com/adminconsole/instances";
+        _adminApiSettings.AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/complete";
         _adminApiSettings.Username = "test-username";
         _adminApiSettings.ClientId = "test-clientid";
         _adminApiSettings.Password = "test-password";
@@ -53,34 +53,34 @@ public class Given_AdminApiSettings_provided
     }
 
     [TestFixture]
-    public class When_it_does_not_have_AdminConsoleTenantsURI : Given_AdminApiSettings_provided
+    public class When_it_does_not_have_AdminConsoleTenantsURL : Given_AdminApiSettings_provided
     {
         [Test]
         public void should_be_invalid()
         {
-            _adminApiSettings.AdminConsoleTenantsURI = string.Empty;
+            _adminApiSettings.AdminConsoleTenantsURL = string.Empty;
             AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
         }
     }
 
     [TestFixture]
-    public class When_it_does_not_have_AdminConsoleInstancesURI : Given_AdminApiSettings_provided
+    public class When_it_does_not_have_AdminConsoleInstancesURL : Given_AdminApiSettings_provided
     {
         [Test]
         public void should_be_invalid()
         {
-            _adminApiSettings.AdminConsoleInstancesURI = string.Empty;
+            _adminApiSettings.AdminConsoleInstancesURL = string.Empty;
             AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
         }
     }
 
     [TestFixture]
-    public class When_it_does_not_have_AdminConsoleCompleteInstancesURI : Given_AdminApiSettings_provided
+    public class When_it_does_not_have_AdminConsoleCompleteInstancesURL : Given_AdminApiSettings_provided
     {
         [Test]
         public void should_be_invalid()
         {
-            _adminApiSettings.AdminConsoleCompleteInstancesURI = string.Empty;
+            _adminApiSettings.AdminConsoleCompleteInstancesURL = string.Empty;
             AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
         }
     }

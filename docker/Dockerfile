@@ -17,6 +17,9 @@ RUN dotnet restore &&\
 
 # .NET Runtime image to execute the application
 FROM mcr.microsoft.com/dotnet/runtime:8.0.11-alpine3.20-amd64@sha256:6970cb2d1f8ba6e87d49cfb35687106f0b80c874171978b60d8962daaa8e097f AS runtime
+RUN apk --upgrade --no-cache add bash=~5 curl dos2unix=~7 gettext=~0 icu=~74
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Add cron from file and adjust permissions
 COPY crontab /etc/cron.d/container_cronjob

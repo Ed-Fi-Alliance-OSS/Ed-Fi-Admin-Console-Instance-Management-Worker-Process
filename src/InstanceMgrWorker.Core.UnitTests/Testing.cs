@@ -53,9 +53,9 @@ public class Testing
     {
         AdminApiSettings adminApiSettings = new AdminApiSettings();
         adminApiSettings.AccessTokenUrl = "http://www.myserver.com/token";
-        adminApiSettings.AdminConsoleTenantsURI = "http://www.myserver.com/adminconsole/tenants";
-        adminApiSettings.AdminConsoleInstancesURI = "http://www.myserver.com/adminconsole/instances?status=pending";
-        adminApiSettings.AdminConsoleCompleteInstancesURI = "http://www.myserver.com/adminconsole/instances/{0}/completed";
+        adminApiSettings.AdminConsoleTenantsURL = "http://www.myserver.com/adminconsole/tenants";
+        adminApiSettings.AdminConsoleInstancesURL = "http://www.myserver.com/adminconsole/instances?status=pending";
+        adminApiSettings.AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/instances/{0}/completed";
         adminApiSettings.Username = "test-username";
         adminApiSettings.ClientId = "test-clientid";
         adminApiSettings.Password = "test-password";

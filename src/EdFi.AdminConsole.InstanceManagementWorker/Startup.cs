@@ -50,11 +50,25 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
             services.AddTransient<IAppSettings, AppSettings>();
             services.AddTransient<IAdminApiCaller, AdminApiCaller>();
             services.AddTransient<IConfigConnectionStringsProvider, ConfigConnectionStringsProvider>();
-            services.AddTransient<IDatabaseEngineProvider, InstanceDatabaseEngineProvider>();
             services.AddTransient<IDbConnectionStringBuilderAdapterFactory, DbConnectionStringBuilderAdapterFactory>();
             services.AddTransient<IDbConnectionStringBuilderAdapter, NpgsqlConnectionStringBuilderAdapter>();
             services.AddTransient<IDatabaseNameBuilder, InstanceDatabaseNameBuilder>();
-            services.AddTransient<IInstanceProvisioner, PostgresInstanceProvisioner>();
+
+            var databaseEngine = config.GetValue("AppSettings:DatabaseEngine", "SqlServer");
+
+            var isSqlServer = DatabaseEngineEnum.Parse(databaseEngine).Equals(DatabaseEngineEnum.SqlServer);
+
+            if (isSqlServer)
+            {
+                services.AddTransient<IDatabaseEngineProvider, SqlServerDatabaseEngineProvider>();
+                services.AddTransient<IInstanceProvisioner, SqlServerInstanceProvisioner>();
+            }
+            else
+            {
+                services.AddTransient<IDatabaseEngineProvider, PostgresDatabaseEngineProvider>();
+                services.AddTransient<IInstanceProvisioner, PostgresInstanceProvisioner>();
+            }
+
             services.AddTransient<IHttpRequestMessageBuilder, HttpRequestMessageBuilder>();
             services.AddTransient<IAdminApiClient, AdminApiClient>();
             services.AddTransient<IAdminApiCaller, AdminApiCaller>();

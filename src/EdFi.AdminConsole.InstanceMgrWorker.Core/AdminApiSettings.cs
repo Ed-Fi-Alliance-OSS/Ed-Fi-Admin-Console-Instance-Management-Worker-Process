@@ -7,9 +7,9 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
 {
     public interface IAdminApiSettings
     {
-        string AdminConsoleTenantsURI { get; set; }
-        string AdminConsoleInstancesURI { get; set; }
-        string AdminConsoleCompleteInstancesURI { get; set; }
+        string AdminConsoleTenantsURL { get; set; }
+        string AdminConsoleInstancesURL { get; set; }
+        string AdminConsoleCompleteInstancesURL { get; set; }
         string AccessTokenUrl { get; set; }
         string Username { get; set; }
         string ClientId { get; set; }
@@ -18,9 +18,9 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
 
     public sealed class AdminApiSettings : IAdminApiSettings
     {
-        public string AdminConsoleTenantsURI { get; set; } = string.Empty;
-        public string AdminConsoleInstancesURI { get; set; } = string.Empty;
-        public string AdminConsoleCompleteInstancesURI { get; set; } = string.Empty;
+        public string AdminConsoleTenantsURL { get; set; } = string.Empty;
+        public string AdminConsoleInstancesURL { get; set; } = string.Empty;
+        public string AdminConsoleCompleteInstancesURL { get; set; } = string.Empty;
         public string AccessTokenUrl { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
