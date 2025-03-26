@@ -48,13 +48,13 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
             {
                 await conn.OpenAsync();
 
-                string message = $"backup directory = {_sqlServerBacFile}";
-                _logger.Debug(message);
+                string sqlServerBacDirectoryMessage = $"backup directory = {_sqlServerBacFile}";
+                _logger.Debug(sqlServerBacDirectoryMessage);
 
                 string backup = _sqlServerBacFile;
 
-                string message1 = $"backup file = {_sqlServerBacFile}";
-                _logger.Debug(message1);
+                string sqlServerBacFileMessage = $"backup file = {_sqlServerBacFile}";
+                _logger.Debug(sqlServerBacFileMessage);
 
                 var sqlFileInfo = await GetDatabaseFilesAsync(newDatabaseName)
                     .ConfigureAwait(false);
@@ -67,8 +67,8 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
                 {
                     string logicalNameForRows = "", logicalNameForLog = "";
 
-                    string message3 = $"restoring files from {backup}.";
-                    _logger.Debug(message3);
+                    string restoringFilesFromMessage = $"restoring files from {backup}.";
+                    _logger.Debug(restoringFilesFromMessage);
 
                     using (var reader = await conn.ExecuteReaderAsync($@"RESTORE FILELISTONLY FROM DISK = '{backup}';", commandTimeout: CommandTimeout)
                         .ConfigureAwait(false))
@@ -87,14 +87,14 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
                             }
                         }
 
-                        string message4 = $"logical name for Rows Type = {logicalNameForRows}";
-                        _logger.Debug(message4);
-                        string message5 = $"logical name for Log Type = {logicalNameForLog}";
-                        _logger.Debug(message5);
+                        string logicalNameForRowsMessage = $"logical name for Rows Type = {logicalNameForRows}";
+                        _logger.Debug(logicalNameForRowsMessage);
+                        string logicalNameForLogMessage = $"logical name for Log Type = {logicalNameForLog}";
+                        _logger.Debug(logicalNameForLogMessage);
                     }
 
-                    string message6 = $"Restoring database {newDatabaseName} from {backup}";
-                    _logger.Debug(message6);
+                    string restoringDatabaseMessage = $"Restoring database {newDatabaseName} from {backup}";
+                    _logger.Debug(restoringDatabaseMessage);
 
                     await conn.ExecuteAsync(
                             $@"RESTORE DATABASE [{newDatabaseName}] FROM DISK = '{backup}' WITH REPLACE, MOVE '{logicalNameForRows}' TO '{sqlFileInfo.Data}', MOVE '{logicalNameForLog}' TO '{sqlFileInfo.Log}';", commandTimeout: CommandTimeout)
