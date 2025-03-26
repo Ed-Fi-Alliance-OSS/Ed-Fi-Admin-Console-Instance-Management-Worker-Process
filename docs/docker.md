@@ -1,7 +1,7 @@
 # Docker Support for Ed-Fi-Admin-Console-Instance-Management-Worker-Process
 
 1. Having an Admin Api up and running is a requirement for `Instance-Management-Worker-Process`.
-   One option for seting it up quickly is by using docker as well, following these [instructions](https://github.com/Ed-Fi-Alliance-OSS/AdminAPI-2.x/blob/main/docs/docker.md). Take into account that Admin Api needs to be running with KeyCloak authentication
+   One option for setting it up quickly is by using docker as well, following these [instructions](https://github.com/Ed-Fi-Alliance-OSS/AdminAPI-2.x/blob/main/docs/docker.md). Take into account that Admin Api needs to be running with KeyCloak authentication
    enabled.
 
 2. Copy and customize the `.env.template.mssql` or `.env.template.pgsql` file.
