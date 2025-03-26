@@ -24,7 +24,7 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
             var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "";
             config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("EdFi:AdminConsole:")
+                .AddEnvironmentVariables("EdFi_AdminConsole_")
                 .AddCommandLine(args, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["--masterDb"] = "ConnectionStrings:EdFi_Master",

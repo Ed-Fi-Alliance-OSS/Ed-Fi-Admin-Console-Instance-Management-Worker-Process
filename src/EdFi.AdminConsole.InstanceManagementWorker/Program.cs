@@ -17,7 +17,7 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
                     .ConfigureAppConfiguration((context, config) =>
                     {
                         Startup.ConfigureAppConfiguration(args, config);
-                        config.AddEnvironmentVariables(prefix: "EdFi:AdminConsole:");
+                        config.AddEnvironmentVariables(prefix: "EdFi_AdminConsole_");
                     })
                     .ConfigureServices((context, services) =>
                     {
