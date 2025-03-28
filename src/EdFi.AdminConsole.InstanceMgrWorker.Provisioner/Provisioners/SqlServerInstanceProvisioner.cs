@@ -18,13 +18,13 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
 {
     private readonly ILog _logger = LogManager.GetLogger(typeof(SqlServerInstanceProvisioner));
     private SqlServerHostPlatform? _sqlServerHostPlatform;
-    private readonly string _sqlServerBacFile;
+    private readonly string _sqlServerBakFile;
 
     public SqlServerInstanceProvisioner(IConfiguration configuration,
             IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
             : base(configuration, connectionStringsProvider, databaseNameBuilder)
     {
-        _sqlServerBacFile = configuration.GetSection("AppSettings:SqlServerBacFile").Value ?? string.Empty;
+        _sqlServerBakFile = configuration.GetSection("AppSettings:SqlServerBakFile").Value ?? string.Empty;
     }
 
     public override async Task<bool> CheckDatabaseExists(string instanceName)
@@ -48,13 +48,13 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
             {
                 await conn.OpenAsync();
 
-                string sqlServerBacDirectoryMessage = $"backup directory = {_sqlServerBacFile}";
-                _logger.Debug(sqlServerBacDirectoryMessage);
+                string sqlServerBakDirectoryMessage = $"backup directory = {_sqlServerBakFile}";
+                _logger.Debug(sqlServerBakDirectoryMessage);
 
-                string backup = _sqlServerBacFile;
+                string backup = _sqlServerBakFile;
 
-                string sqlServerBacFileMessage = $"backup file = {_sqlServerBacFile}";
-                _logger.Debug(sqlServerBacFileMessage);
+                string sqlServerBakFileMessage = $"backup file = {_sqlServerBakFile}";
+                _logger.Debug(sqlServerBakFileMessage);
 
                 var sqlFileInfo = await GetDatabaseFilesAsync(newDatabaseName)
                     .ConfigureAwait(false);

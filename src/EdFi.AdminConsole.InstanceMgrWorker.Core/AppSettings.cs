@@ -10,7 +10,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         string DatabaseEngine { get; set; }
         bool IgnoresCertificateErrors { get; set; }
         bool OverrideExistingDatabase { get; set; }
-        string SqlServerBacFile { get; set; }
+        string SqlServerBakFile { get; set; }
     }
 
     public sealed class AppSettings : IAppSettings
@@ -18,6 +18,6 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         public string DatabaseEngine { get; set; } = string.Empty;
         public bool IgnoresCertificateErrors { get; set; } = false;
         public bool OverrideExistingDatabase { get; set; } = false;
-        public string SqlServerBacFile { get; set; } = string.Empty;
+        public string SqlServerBakFile { get; set; } = string.Empty;
     }
 }

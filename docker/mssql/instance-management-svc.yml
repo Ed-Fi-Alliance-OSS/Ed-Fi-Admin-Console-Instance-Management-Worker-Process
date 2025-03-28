@@ -16,7 +16,7 @@ services:
       EdFi_AdminConsole_AppSettings__DefaultPageSizeLimit: 25
       EdFi_AdminConsole_AppSettings__OverrideExistingDatabase: ${OVERRIDE_EXISTING_DATABASE:-false}
       EdFi_AdminConsole_AppSettings__IgnoresCertificateErrors: ${IGNORES_CERTIFICATE_ERRORS:-true}
-      EdFi_AdminConsole_AppSettings__SqlServerBacFile: ${SQLSERVER_BAC_FILE:-"./Ods_Minimal_Template.bak"}
+      EdFi_AdminConsole_AppSettings__SqlServerBakFile: ${SQLSERVER_BAK_FILE:-"./Ods_Minimal_Template.bak"}
       EdFi_AdminConsole_ConnectionStrings__EdFi_Master: ${EDFI_MASTER:-"Data Source=host.docker.internal;Initial Catalog=master;User ID=sa;Password=1StrongPwd!!;Trusted_Connection=false;Encrypt=True;TrustServerCertificate=True;Persist Security Info=True;"}
       EdFi_AdminConsole_ConnectionStrings__EdFi_Ods: ${EDFI_ODS:-"Data Source=host.docker.internal;Initial Catalog={0};User ID=sa;Password=1StrongPwd!!;Trusted_Connection=false;Encrypt=True;TrustServerCertificate=True;Persist Security Info=True;"}
       EdFi_AdminConsole_AdminApiSettings__AccessTokenUrl: ${ACCESS_TOKEN_URL:-"https://host.docker.internal/auth/realms/edfi-admin-console/protocol/openid-connect/token"}
