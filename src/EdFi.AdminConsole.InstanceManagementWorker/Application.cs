@@ -50,7 +50,7 @@ public class Application(
 
                 if (instances == null || !instances.Any())
                 {
-                    _logger.LogInformation("No instances found on Admin Api for tenant {TenantName}", tenantName);
+                    _logger.LogInformation("No instances pending to create found on Admin Api for tenant {TenantName}", tenantName);
                 }
                 else
                 {
@@ -74,6 +74,8 @@ public class Application(
 
                             if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName))
                                 _logger.LogError("Not able to complete instance.");
+
+                            _logger.LogInformation("Completed processing instance with name: {InstanceName}", instanceName);
                         }
                     }
                     _logger.LogInformation("Process completed.");
@@ -84,7 +86,6 @@ public class Application(
 
     public async Task DeleteInstances()
     {
-
         var tenants = await _adminApiCaller.GetTenantsAsync();
         var tenantNames = tenants.Select(tenant => tenant.Document.Name).ToList();
         foreach (var tenantName in tenantNames)

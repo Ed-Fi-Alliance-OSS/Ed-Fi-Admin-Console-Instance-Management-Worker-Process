@@ -30,7 +30,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiGet(_adminApiOptions.AdminConsoleTenantsURI, null);
+            var response = await _adminApiClient.AdminApiGet(_adminApiOptions.AdminConsoleTenantsURL, null);
             var tenants = new List<AdminConsoleTenant>();
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.Content))
@@ -71,7 +71,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var instancesURL = string.Format(_adminApiOptions.AdminConsoleInstancesURI, status);
+            var instancesURL = string.Format(_adminApiOptions.AdminConsoleInstancesURL, status);
             var response = await _adminApiClient.AdminApiGet(instancesURL, tenant);
             var instances = new List<AdminConsoleInstance>();
 
@@ -113,7 +113,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURI, instanceId), tenant);
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }

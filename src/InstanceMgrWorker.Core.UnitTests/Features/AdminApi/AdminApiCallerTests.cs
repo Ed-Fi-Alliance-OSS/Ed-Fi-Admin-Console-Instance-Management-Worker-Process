@@ -66,7 +66,7 @@ public class Given_an_admin_api
 
             _adminApiClient = A.Fake<IAdminApiClient>();
 
-            A.CallTo(() => _adminApiClient.AdminApiGet(Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURI, null))
+            A.CallTo(() => _adminApiClient.AdminApiGet(Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURL, null))
                 .Returns(new ApiResponse(HttpStatusCode.OK, Testing.Instances));
 
             _adminApiCaller = new AdminApiCaller(_logger, _adminApiClient, Testing.GetAdminApiSettings());
@@ -118,7 +118,7 @@ public class Given_an_admin_api
 
             _adminApiClient = A.Fake<IAdminApiClient>();
 
-            A.CallTo(() => _adminApiClient.AdminApiPost(string.Format(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURI, instanceId), null))
+            A.CallTo(() => _adminApiClient.AdminApiPost(string.Format(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURL, instanceId), null))
                 .Returns(new ApiResponse(HttpStatusCode.OK, string.Empty));
 
             _adminApiCaller = new AdminApiCaller(_logger, _adminApiClient, Testing.GetAdminApiSettings());

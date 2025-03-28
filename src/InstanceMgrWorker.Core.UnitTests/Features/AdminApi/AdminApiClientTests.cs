@@ -31,7 +31,7 @@ public class Given_an_admin_api_http_client
         public async Task should_return_successfully()
         {
             var httpClient = A.Fake<IAppHttpClient>();
-            var instancesUrl = Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURI;
+            var instancesUrl = Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURL;
 
             A.CallTo(() => httpClient.SendAsync(Testing.GetAdminApiSettings().Value.AccessTokenUrl, HttpMethod.Post, A<FormUrlEncodedContent>.Ignored, null))
                 .Returns(new ApiResponse(HttpStatusCode.OK, "{ \"access_token\": \"123\"}"));
@@ -54,7 +54,7 @@ public class Given_an_admin_api_http_client
         public async Task should_return_successfully()
         {
             var httpClient = A.Fake<IAppHttpClient>();
-            var instancesUrl = Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURI;
+            var instancesUrl = Testing.GetAdminApiSettings().Value.AdminConsoleInstancesURL;
 
             A.CallTo(() => httpClient.SendAsync(Testing.GetAdminApiSettings().Value.AccessTokenUrl, HttpMethod.Post, A<FormUrlEncodedContent>.Ignored, null))
                 .Returns(new ApiResponse(HttpStatusCode.InternalServerError, string.Empty));
@@ -77,7 +77,7 @@ public class Given_an_admin_api_http_client
         public async Task should_return_successfully()
         {
             var httpClient = A.Fake<IAppHttpClient>();
-            var tenantsUrl = Testing.GetAdminApiSettings().Value.AdminConsoleTenantsURI;
+            var tenantsUrl = Testing.GetAdminApiSettings().Value.AdminConsoleTenantsURL;
 
             A.CallTo(() => httpClient.SendAsync(Testing.GetAdminApiSettings().Value.AccessTokenUrl, HttpMethod.Post, A<FormUrlEncodedContent>.Ignored, null))
                 .Returns(new ApiResponse(HttpStatusCode.OK, "{ \"access_token\": \"123\"}"));
@@ -100,7 +100,7 @@ public class Given_an_admin_api_http_client
         public async Task should_return_successfully()
         {
             var httpClient = A.Fake<IAppHttpClient>();
-            var tenantsUrl = Testing.GetAdminApiSettings().Value.AdminConsoleTenantsURI;
+            var tenantsUrl = Testing.GetAdminApiSettings().Value.AdminConsoleTenantsURL;
 
             A.CallTo(() => httpClient.SendAsync(Testing.GetAdminApiSettings().Value.AccessTokenUrl, HttpMethod.Post, A<FormUrlEncodedContent>.Ignored, null))
                 .Returns(new ApiResponse(HttpStatusCode.InternalServerError, string.Empty));

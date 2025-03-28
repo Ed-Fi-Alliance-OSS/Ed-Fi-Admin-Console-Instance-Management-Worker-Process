@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+services:
+  instance-management-service:
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      EdFi_AdminConsole_AppSettings__DatabaseEngine: ${DATABASE_ENGINE:-SqlServer}
+      EdFi_AdminConsole_AppSettings__PathBase: ${PATHBASE:-""}
+      EdFi_AdminConsole_AppSettings__DefaultPageSizeOffset: 0
+      EdFi_AdminConsole_AppSettings__DefaultPageSizeLimit: 25
+      EdFi_AdminConsole_AppSettings__OverrideExistingDatabase: ${OVERRIDE_EXISTING_DATABASE:-false}
+      EdFi_AdminConsole_AppSettings__IgnoresCertificateErrors: ${IGNORES_CERTIFICATE_ERRORS:-true}
+      EdFi_AdminConsole_AppSettings__SqlServerBakFile: ${SQLSERVER_BAK_FILE:-"./Ods_Minimal_Template.bak"}
+      EdFi_AdminConsole_ConnectionStrings__EdFi_Master: ${EDFI_MASTER:-"Data Source=host.docker.internal;Initial Catalog=master;User ID=sa;Password=1StrongPwd!!;Trusted_Connection=false;Encrypt=True;TrustServerCertificate=True;Persist Security Info=True;"}
+      EdFi_AdminConsole_ConnectionStrings__EdFi_Ods: ${EDFI_ODS:-"Data Source=host.docker.internal;Initial Catalog={0};User ID=sa;Password=1StrongPwd!!;Trusted_Connection=false;Encrypt=True;TrustServerCertificate=True;Persist Security Info=True;"}
+      EdFi_AdminConsole_AdminApiSettings__AccessTokenUrl: ${ACCESS_TOKEN_URL:-"https://host.docker.internal/auth/realms/edfi-admin-console/protocol/openid-connect/token"}
+      EdFi_AdminConsole_AdminApiSettings__AdminConsoleTenantsURL: ${ADMINCONSOLE_TENANTS_URL:-"https://host.docker.internal/adminapi/adminconsole/tenants"}
+      EdFi_AdminConsole_AdminApiSettings__AdminConsoleInstancesURL: ${ADMINCONSOLE_INSTANCES_URL:-"https://host.docker.internal/adminapi/adminconsole/instances?status={0}"}
+      EdFi_AdminConsole_AdminApiSettings__AdminConsoleCompleteInstancesURL: ${ADMINCONSOLE_COMPLETE_INSTANCES_URL:-"https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"}
+      EdFi_AdminConsole_AdminApiSettings__Username: ${USERNAME:-"adminconsole-user"}
+      EdFi_AdminConsole_AdminApiSettings__ClientId: ${CLIENTID:-"admin-console"}
+      EdFi_AdminConsole_AdminApiSettings__Password: ${PASSWORD:-"SomePassword"}
+      EdFi_AdminConsole_DatabaseProvider: ${DATABASE_PROVIDER:-"System.Data.SqlClient"}
+    volumes:
+      - service-logs:/var/log/acinstancesvc
+  
+  sqlserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=1StrongPwd!!
+      - MSSQL_PID=Developer
+    user: root
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: always
+    
+volumes:
+  sqlserver_data:
+    name: sqlserver_data
+  service-logs:
+    name: instance-management-service-logs

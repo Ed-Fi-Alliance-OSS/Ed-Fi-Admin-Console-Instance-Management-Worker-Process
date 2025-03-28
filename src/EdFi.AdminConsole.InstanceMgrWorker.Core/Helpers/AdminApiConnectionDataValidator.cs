@@ -16,14 +16,14 @@ public static class AdminApiConnectionDataValidator
         if (string.IsNullOrEmpty(adminApiSettings.AccessTokenUrl))
             messages.Add("AccessTokenUrl is required.");
 
-        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleTenantsURI))
-            messages.Add("AdminConsoleTenantsURI is required.");
+        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleTenantsURL))
+            messages.Add("AdminConsoleTenantsURL is required.");
 
-        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleInstancesURI))
-            messages.Add("AdminConsoleInstancesURI is required.");
+        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleInstancesURL))
+            messages.Add("AdminConsoleInstancesURL is required.");
 
-        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleCompleteInstancesURI))
-            messages.Add("AdminConsoleCompleteInstancesURI is required.");
+        if (string.IsNullOrEmpty(adminApiSettings.AdminConsoleCompleteInstancesURL))
+            messages.Add("AdminConsoleCompleteInstancesURL is required.");
 
         if (string.IsNullOrEmpty(adminApiSettings.Username))
             messages.Add("ClientId is required.");

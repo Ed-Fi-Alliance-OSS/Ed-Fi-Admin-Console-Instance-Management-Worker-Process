@@ -57,8 +57,8 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
         }
         public async Task AddDbInstanceAsync(string instanceName, DbInstanceType instanceType, bool useSuffix)
         {
-            var newInstanceName = useSuffix ? _databaseNameBuilder.SandboxNameForKey(instanceName) : instanceName;
-            await DeleteDbInstancesAsync(instanceName).ConfigureAwait(false);
+            var newInstanceName = _databaseNameBuilder.SandboxNameForKey(instanceName);
+            await DeleteDbInstancesAsync(newInstanceName).ConfigureAwait(false);
 
             switch (instanceType)
             {
