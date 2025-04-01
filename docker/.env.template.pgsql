@@ -9,6 +9,8 @@ ACCESS_TOKEN_URL="https://host.docker.internal/auth/realms/edfi-admin-console/pr
 ADMINCONSOLE_TENANTS_URL="https://host.docker.internal/adminapi/adminconsole/tenants"
 ADMINCONSOLE_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances?status={0}"
 ADMINCONSOLE_COMPLETE_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"
+ADMINCONSOLE_DELETED_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances/{0}/deleted"
+ADMINCONSOLE_DELETEFAILED_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances/{0}/deltefailed"
 USERNAME=adminconsole-user
 CLIENTID=admin-console
 PASSWORD=SomePassword
