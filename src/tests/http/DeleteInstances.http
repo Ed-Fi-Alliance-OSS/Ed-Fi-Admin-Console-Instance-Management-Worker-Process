@@ -1,0 +1,67 @@
+
+### Authenticate with KeyCloak
+# @name adminTokenKeyCloak
+POST https://localhost/auth/realms/edfi-admin-console/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=adminconsole-user&password=123456&client_id=admin-console
+
+###
+@admin_token={{adminTokenKeyCloak.response.body.$.access_token}}
+@auth_header_admin_token=Authorization: bearer {{adminTokenKeyCloak.response.body.$.access_token}}
+@tenant_header=Tenant: tenant1
+
+### Create the AdminConsole instance
+# @name adminConsoleInstance
+POST https://localhost/adminapi/adminconsole/odsInstances
+Content-Type: application/json
+tenant: tenant1
+{{auth_header_admin_token}}
+
+{
+  "tenantId": 1,
+  "tenantName": "tenant1",
+  "name": "Instance3",
+  "instanceType": "enterprise",
+  "odsInstanceContexts": [
+    {
+      "contextKey": "schoolYearFromRoute",
+      "contextValue": "2024"
+    }
+  ],
+  "odsInstanceDerivatives": [
+    {
+      "derivativeType": "ReadReplica"
+    }
+  ]
+}
+
+### Run the worker and wait
+
+### Get completed ODS instances
+# @name completedOdsInstances
+GET https://localhost/adminapi/adminconsole/odsInstances?status=completed
+{{auth_header_admin_token}}
+{{tenant_header}}
+
+### DELETE a completed ODS instances
+# @name deleteODSIntance
+DELETE https://localhost/adminapi/adminconsole/odsInstances/2
+{{auth_header_admin_token}}
+{{tenant_header}}
+
+### Run the worker and wait
+
+### Get all instances
+# @name allInstances
+GET https://localhost/adminapi/adminconsole/instances
+{{auth_header_admin_token}}
+{{tenant_header}}
+
+### Get pending ODS instances
+# @name pendingInstances
+GET https://localhost/adminapi/adminconsole/instances?status=deleted
+{{auth_header_admin_token}}
+{{tenant_header}}
+
+

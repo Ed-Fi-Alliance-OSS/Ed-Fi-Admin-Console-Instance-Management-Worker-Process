@@ -1,14 +1,15 @@
 
 ### Authenticate with KeyCloak
 # @name adminTokenKeyCloak
-POST https://localhost/auth/realms/myrealm/protocol/openid-connect/token
+POST https://localhost/auth/realms/edfi-admin-console/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
-grant_type=password&username=myuser&password=SomePassword&client_id=ac
+grant_type=password&username=adminconsole-user&password=123456&client_id=admin-console
 
 ###
 @admin_token={{adminTokenKeyCloak.response.body.$.access_token}}
 @auth_header_admin_token=Authorization: bearer {{adminTokenKeyCloak.response.body.$.access_token}}
+@tenant_header=Tenant: tenant1
 
 ### Create the AdminConsole instance
 # @name adminConsoleInstance
@@ -45,30 +46,35 @@ GET https://localhost/adminapi/adminconsole/tenants
 # @name allOdsInstances
 GET https://localhost/adminapi/adminconsole/odsInstances
 {{auth_header_admin_token}}
+{{tenant_header}}
 
 ### Get pending ODS instances
 # @name pendingOdsInstances
 GET https://localhost/adminapi/adminconsole/odsInstances?status=pending
 {{auth_header_admin_token}}
+{{tenant_header}}
 
 ### Get completed ODS instances
 # @name completedOdsInstances
 GET https://localhost/adminapi/adminconsole/odsInstances?status=completed
 {{auth_header_admin_token}}
-
+{{tenant_header}}
 
 ### Get all instances
 # @name allInstances
 GET https://localhost/adminapi/adminconsole/instances
 {{auth_header_admin_token}}
+{{tenant_header}}
 
 ### Get pending ODS instances
 # @name pendingInstances
 GET https://localhost/adminapi/adminconsole/instances?status=pending
 {{auth_header_admin_token}}
+{{tenant_header}}
 
 ### Get completed ODS instances
 # @name completedInstances
 GET https://localhost/adminapi/adminconsole/instances?status=completed
 {{auth_header_admin_token}}
+{{tenant_header}}
 
