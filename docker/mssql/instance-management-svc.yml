@@ -25,9 +25,12 @@ services:
       EdFi_AdminConsole_AdminApiSettings__AdminConsoleCompleteInstancesURL: ${ADMINCONSOLE_COMPLETE_INSTANCES_URL:-"https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"}
       EdFi_AdminConsole_AdminApiSettings__AdminConsoleInstanceDeletedURL: ${ADMINCONSOLE_DELETED_INSTANCES_URL:-"https://host.docker.internal/adminapi/adminconsole/instances/{0}/deleted"}
       EdFi_AdminConsole_AdminApiSettings__AdminConsoleInstanceDeleteFailedURL: ${ADMINCONSOLE_DELETEFAILED_INSTANCES_URL:-"https://host.docker.internal/adminapi/adminconsole/instances/{0}/deletefailed"}
-      EdFi_AdminConsole_AdminApiSettings__Username: ${IDP_USERNAME:-"adminconsole-user"}
-      EdFi_AdminConsole_AdminApiSettings__ClientId: ${CLIENTID:-"admin-console"}
-      EdFi_AdminConsole_AdminApiSettings__Password: ${IDP_PASSWORD:-"SomePassword"}
+      EdFi_AdminConsole_AdminApiSettings__Username: ${USER_NAME}
+      EdFi_AdminConsole_AdminApiSettings__ClientId: ${CLIENTID:-adminconsole-worker-client}
+      EdFi_AdminConsole_AdminApiSettings__ClientSecret: ${CLIENT_SECRET:-7tpYh5eZtL0ct99cmfCXUY3q5o2KxUTU}
+      EdFi_AdminConsole_AdminApiSettings__Password: ${PASSWORD}
+      EdFi_AdminConsole_AdminApiSettings__GrantType: ${GRANTTYPE:-client_credentials}
+      EdFi_AdminConsole_AdminApiSettings__Scope: ${SCOPE:-edfi_admin_api/full_access}
       EdFi_AdminConsole_DatabaseProvider: ${DATABASE_PROVIDER:-"System.Data.SqlClient"}
     volumes:
       - service-logs:/var/log/acinstancesvc
