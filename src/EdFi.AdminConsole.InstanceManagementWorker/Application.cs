@@ -90,7 +90,7 @@ public class Application(
         var tenantNames = tenants.Select(tenant => tenant.Document.Name).ToList();
         foreach (var tenantName in tenantNames)
         {
-            /// Step 1. Get instances data from Admin API - Admin Console extension.
+            // Step 1. Get instances data from Admin API - Admin Console extension.
             var instances = await _adminApiCaller.GetInstancesAsync(tenantName, nameof(InstanceStatus.Pending_Delete));
 
             if (instances == null || !instances.Any())
@@ -99,22 +99,37 @@ public class Application(
                 continue;
             }
 
-            var instancesNames = instances.Select(instance => instance.InstanceName).ToList();
-            foreach (var instanceName in instancesNames)
+            foreach (var instanceData in instances)
             {
                 try
                 {
-                    _logger.LogInformation("Deleting instance: {InstanceName}", instanceName);
-                    await _instanceProvisioner.DeleteDbInstancesAsync(instanceName);
-                    _logger.LogInformation("Instance {InstanceName} deleted successfully.", instanceName);
-                    /// TODO: Call POST /adminconsole/instances/{id}/deleted to mark the Instance as DELETED
+                    _logger.LogInformation("Deleting instance: {InstanceName}", instanceData.InstanceName);
+                    await _instanceProvisioner.DeleteDbInstancesAsync(instanceData.InstanceName);
+                    // Call POST /adminconsole/instances/{id}/deleted to mark the Instance as DELETED
+                    await _adminApiCaller.DeletedInstanceAsync(instanceData.Id, instanceData.TenantName);
+                    _logger.LogInformation("Instance {InstanceName} deleted successfully.", instanceData.InstanceName);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to delete instance: {InstanceName}", instanceName);
-                    /// TODO: Call POST /adminconsole/instances/{id}/deleteFailed to mark the Instance as DELETE_FAILED
+                    _logger.LogError(ex, "Failed to delete instance: {InstanceName}", instanceData);
+                    // Call POST /adminconsole/instances/{id}/deleteFailed to mark the Instance as DELETE_FAILED
+                    await SetDeleteFailedStatus(instanceData);
                 }
             }
+        }
+    }
+
+    private async Task SetDeleteFailedStatus(AdminConsoleInstance instanceData)
+    {
+        try
+        {
+            await _adminApiCaller.DeletedFailedInstanceAsync(instanceData.Id, instanceData.TenantName);
+            _logger.LogInformation("Instance {InstanceName} DELETE_FAILED status set successfully.", instanceData.InstanceName);
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set DELETE_FAILED status in instance: {InstanceName}", instanceData);
         }
     }
 
