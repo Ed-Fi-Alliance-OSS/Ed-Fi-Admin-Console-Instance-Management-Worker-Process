@@ -9,7 +9,9 @@ ACCESS_TOKEN_URL="https://host.docker.internal/auth/realms/edfi-admin-console/pr
 ADMINCONSOLE_TENANTS_URL="https://host.docker.internal/adminapi/adminconsole/tenants"
 ADMINCONSOLE_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances?status={0}"
 ADMINCONSOLE_COMPLETE_INSTANCES_URL="https://host.docker.internal/adminapi/adminconsole/instances/{0}/completed"
-USERNAME=adminconsole-user
-CLIENTID=admin-console
-PASSWORD=SomePassword
-DATABASE_PROVIDER=Npgsql
+USER_NAME=
+CLIENTID=adminconsole-worker-client
+CLIENT_SECRET=7tpYh5eZtL0ct99cmfCXUY3q5o2KxUTU
+PASSWORD=
+GRANTTYPE=client_credentials
+SCOPE=edfi_admin_api/full_access
