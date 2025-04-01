@@ -13,7 +13,10 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         string AccessTokenUrl { get; set; }
         string Username { get; set; }
         string ClientId { get; set; }
+        string ClientSecret { get; set; }
         string Password { get; set; }
+        string GrantType { get; set; }
+        string Scope { get; set; }
     }
 
     public sealed class AdminApiSettings : IAdminApiSettings
@@ -24,6 +27,9 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         public string AccessTokenUrl { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
+        public string ClientSecret { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string GrantType { get; set; } = string.Empty;
+        public string Scope { get; set; } = string.Empty;
     }
 }
