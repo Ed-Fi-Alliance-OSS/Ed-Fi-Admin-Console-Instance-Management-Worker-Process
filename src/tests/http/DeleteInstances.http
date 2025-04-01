@@ -4,7 +4,7 @@
 POST https://localhost/auth/realms/edfi-admin-console/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
-grant_type=password&username=adminconsole-user&password=123456&client_id=admin-console
+grant_type=password&username=adminconsole-user&password=SomePassword&client_id=admin-console
 
 ###
 @admin_token={{adminTokenKeyCloak.response.body.$.access_token}}
