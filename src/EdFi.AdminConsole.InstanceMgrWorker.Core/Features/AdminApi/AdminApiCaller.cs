@@ -133,7 +133,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant);
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleInstanceDeletedURL, instanceId), tenant);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }
@@ -148,7 +148,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant);
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleInstanceDeleteFailedURL, instanceId), tenant);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }
