@@ -139,7 +139,7 @@ public class AdminApiClient : IAdminApiClient
             }
             else
             {
-                _logger.LogError("Not able to get Admin Api Access Token");
+                _logger.LogError("Not able to get Admin Api Access Token. Status Code: {0}", apiResponse.StatusCode.ToString());
             }
         }
     }
