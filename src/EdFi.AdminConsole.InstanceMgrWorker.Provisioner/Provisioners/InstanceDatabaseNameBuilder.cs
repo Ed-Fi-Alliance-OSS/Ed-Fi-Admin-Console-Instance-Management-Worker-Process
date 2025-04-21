@@ -60,7 +60,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             get => DatabaseName(TemplateSampleDatabase);
         }
 
-        public string SandboxNameForKey(string key) => DatabaseName(SandboxPrefix + key);
+        public string SandboxNameForKey(string key) => DatabaseName(TemplatePrefix + key);
 
         public string KeyFromSandboxName(string sandboxName) => sandboxName.Replace(DatabaseName(SandboxPrefix), string.Empty);
 
