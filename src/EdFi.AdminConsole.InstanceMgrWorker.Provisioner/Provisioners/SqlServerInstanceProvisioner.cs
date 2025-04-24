@@ -21,7 +21,7 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
     private readonly string _sqlServerBakFile;
 
     public SqlServerInstanceProvisioner(IConfiguration configuration,
-            IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
             : base(configuration, connectionStringsProvider, databaseNameBuilder)
     {
         _sqlServerBakFile = configuration.GetSection("AppSettings:SqlServerBakFile").Value ?? string.Empty;

@@ -21,7 +21,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 
         private readonly Lazy<string> _databaseNameTemplate;
 
-        public InstanceDatabaseNameBuilder(IConfigConnectionStringsProvider connectionStringsProvider,
+        public InstanceDatabaseNameBuilder(IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider,
             IDbConnectionStringBuilderAdapterFactory connectionStringBuilderFactory)
         {
             _databaseNameTemplate = new Lazy<string>(

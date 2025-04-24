@@ -49,7 +49,7 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
 #pragma warning restore CS8603 // Possible null reference return.
             services.AddTransient<IAppSettings, AppSettings>();
             services.AddTransient<IAdminApiCaller, AdminApiCaller>();
-            services.AddTransient<IConfigConnectionStringsProvider, ConfigConnectionStringsProvider>();
+            services.AddTransient<IMgrWorkerConfigConnectionStringsProvider, ConfigConnectionStringsProvider>();
             services.AddTransient<IDbConnectionStringBuilderAdapterFactory, DbConnectionStringBuilderAdapterFactory>();
             services.AddTransient<IDbConnectionStringBuilderAdapter, NpgsqlConnectionStringBuilderAdapter>();
             services.AddTransient<IDatabaseNameBuilder, InstanceDatabaseNameBuilder>();

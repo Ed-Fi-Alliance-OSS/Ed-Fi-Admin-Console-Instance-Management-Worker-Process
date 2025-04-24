@@ -5,7 +5,6 @@
 
 using System.Data.Common;
 using EdFi.Admin.DataAccess.Utils;
-using EdFi.Ods.Common.Configuration;
 using EdFi.Ods.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 
@@ -13,13 +12,15 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
     public abstract class InstanceProvisionerBase : IInstanceProvisioner
     {
+        private string _tenant;
         protected readonly IConfiguration _configuration;
-        protected readonly IConfigConnectionStringsProvider _connectionStringsProvider;
+        protected readonly IMgrWorkerConfigConnectionStringsProvider _connectionStringsProvider;
         protected readonly IDatabaseNameBuilder _databaseNameBuilder;
 
         protected InstanceProvisionerBase(IConfiguration configuration,
-            IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
         {
+            _tenant = string.Empty;
             _configuration = configuration;
             _connectionStringsProvider = connectionStringsProvider;
             _databaseNameBuilder = databaseNameBuilder;
@@ -27,13 +28,22 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             CommandTimeout = int.TryParse(_configuration.GetSection("SandboxAdminSQLCommandTimeout").Value, out int timeout)
                 ? timeout
                 : 30;
-
-            ConnectionString = _connectionStringsProvider.GetConnectionString("EdFi_Master");
         }
 
         protected int CommandTimeout { get; }
 
-        protected string ConnectionString { get; }
+        protected string? ConnectionString { get; set; }
+
+        public string Tenant
+        {
+            get => _tenant;
+            set
+            {
+                _tenant = value;
+                _connectionStringsProvider.SetTenant(value);
+                ConnectionString = _connectionStringsProvider.GetConnectionString("EdFi_Master");
+            }
+        }
 
         public string[] GetInstancesDatabases() => GetInstancesDatabasesAsync().GetResultSafely();
 

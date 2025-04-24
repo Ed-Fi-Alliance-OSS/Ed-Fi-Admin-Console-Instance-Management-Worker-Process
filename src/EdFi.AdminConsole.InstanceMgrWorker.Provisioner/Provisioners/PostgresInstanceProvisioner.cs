@@ -15,7 +15,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
     public class PostgresInstanceProvisioner : InstanceProvisionerBase
     {
         public PostgresInstanceProvisioner(IConfiguration configuration,
-            IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
             : base(configuration, connectionStringsProvider, databaseNameBuilder) { }
 
         public override async Task RenameDbInstancesAsync(string oldName, string newName)
