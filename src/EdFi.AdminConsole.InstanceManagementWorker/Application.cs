@@ -107,7 +107,9 @@ public class Application(
                     _logger.LogInformation("Deleting instance: {InstanceName}", instanceData.InstanceName);
                     await _instanceProvisioner.DeleteDbInstancesAsync(instanceData.InstanceName);
                     // Call POST /adminconsole/instances/{id}/deleted to mark the Instance as DELETED
-                    await _adminApiCaller.DeletedInstanceAsync(instanceData.Id, instanceData.TenantName);
+                    if (!await _adminApiCaller.DeletedInstanceAsync(instanceData.Id, instanceData.TenantName))
+                        await SetDeleteFailedStatus(instanceData);
+
                     _logger.LogInformation("Instance {InstanceName} deleted successfully.", instanceData.InstanceName);
                 }
                 catch (Exception ex)
