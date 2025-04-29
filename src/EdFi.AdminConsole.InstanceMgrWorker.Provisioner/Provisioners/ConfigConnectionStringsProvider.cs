@@ -25,9 +25,14 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             get
             {
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-                return _config.GetSection($"Tenants:{_tenant}:ConnectionStrings")
-                    .GetChildren()
-                    .ToDictionary(k => k.Key, v => v.Value);
+                if (!string.IsNullOrEmpty(_tenant) && !_tenant.Equals("default", StringComparison.OrdinalIgnoreCase))
+                    return _config.GetSection($"Tenants:{_tenant}:ConnectionStrings")
+                        .GetChildren()
+                        .ToDictionary(k => k.Key, v => v.Value);
+                else
+                    return _config.GetSection("ConnectionStrings")
+                        .GetChildren()
+                        .ToDictionary(k => k.Key, v => v.Value);
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
             }
         }

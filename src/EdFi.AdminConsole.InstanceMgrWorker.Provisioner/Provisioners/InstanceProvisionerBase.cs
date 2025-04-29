@@ -12,13 +12,13 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
     public abstract class InstanceProvisionerBase : IInstanceProvisioner
     {
-        private string _tenant;
+        protected string _tenant;
         protected readonly IConfiguration _configuration;
         protected readonly IMgrWorkerConfigConnectionStringsProvider _connectionStringsProvider;
-        protected readonly IDatabaseNameBuilder _databaseNameBuilder;
+        protected readonly IMgrWorkerIDatabaseNameBuilder _databaseNameBuilder;
 
         protected InstanceProvisionerBase(IConfiguration configuration,
-            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IMgrWorkerIDatabaseNameBuilder databaseNameBuilder)
         {
             _tenant = string.Empty;
             _configuration = configuration;
@@ -67,7 +67,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
         }
         public async Task AddDbInstanceAsync(string instanceName, DbInstanceType instanceType, bool useSuffix)
         {
-            var newInstanceName = _databaseNameBuilder.SandboxNameForKey(instanceName);
+            var newInstanceName = _databaseNameBuilder.OdsDatabaseName(_tenant, instanceName);
             await DeleteDbInstancesAsync(newInstanceName).ConfigureAwait(false);
 
             switch (instanceType)
