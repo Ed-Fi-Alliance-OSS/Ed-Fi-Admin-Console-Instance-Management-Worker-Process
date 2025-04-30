@@ -11,7 +11,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
     {
         public DatabaseEngine DatabaseEngine { get; }
 
-        public SqlServerDatabaseEngineProvider(IConfigConnectionStringsProvider connectionStringsProvider)
+        public SqlServerDatabaseEngineProvider(IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider)
         {
             DatabaseEngine = DatabaseEngine.CreateFromProviderName("System.Data.SqlClient");
         }
