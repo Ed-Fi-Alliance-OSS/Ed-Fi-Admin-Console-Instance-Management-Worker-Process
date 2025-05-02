@@ -6,7 +6,6 @@
 using System.Data.Common;
 using Dapper;
 using EdFi.Admin.DataAccess.Utils;
-using EdFi.Ods.Common.Configuration;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
@@ -15,7 +14,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
     public class PostgresInstanceProvisioner : InstanceProvisionerBase
     {
         public PostgresInstanceProvisioner(IConfiguration configuration,
-            IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IMgrWorkerIDatabaseNameBuilder databaseNameBuilder)
             : base(configuration, connectionStringsProvider, databaseNameBuilder) { }
 
         public override async Task RenameDbInstancesAsync(string oldName, string newName)
@@ -70,7 +69,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             using (var conn = CreateConnection())
             {
                 var results = await conn.QueryAsync<InstanceStatus>(
-                        $"SELECT datname as Name, 0 as Code, 'ONLINE' Description FROM pg_database WHERE datname = \'{_databaseNameBuilder.SandboxNameForKey(clientKey)}\';",
+                        $"SELECT datname as Name, 0 as Code, 'ONLINE' Description FROM pg_database WHERE datname = \'{_databaseNameBuilder.OdsDatabaseName(_tenant, clientKey)}\';",
                         commandTimeout: CommandTimeout)
                     .ConfigureAwait(false);
 
@@ -83,7 +82,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             using (var conn = CreateConnection())
             {
                 var results = await conn.QueryAsync<string>(
-                        $"SELECT datname as name FROM pg_database WHERE datname like \'{_databaseNameBuilder.SandboxNameForKey("%")}\';",
+                        $"SELECT datname as name FROM pg_database WHERE datname like \'{_databaseNameBuilder.OdsDatabaseName(_tenant, "%")}\';",
                         commandTimeout: CommandTimeout)
                     .ConfigureAwait(false);
 
@@ -96,7 +95,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             using (var conn = CreateConnection())
             {
                 var results = await conn.QueryAsync<string>(
-                        $"SELECT datname as name FROM pg_database WHERE datname like \'{instanceName}\';",
+                        $"SELECT datname as name FROM pg_database WHERE datname like \'{_databaseNameBuilder.OdsDatabaseName(_tenant, instanceName)}\';",
                         commandTimeout: CommandTimeout)
                     .ConfigureAwait(false);
 
