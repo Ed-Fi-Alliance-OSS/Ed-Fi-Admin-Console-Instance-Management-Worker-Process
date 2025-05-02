@@ -46,6 +46,7 @@ public class Application(
         {
             foreach (var tenantName in tenants.Select(tenant => tenant.Document.Name))
             {
+                _instanceProvisioner.Tenant = tenantName;
                 var instances = await _adminApiCaller.GetInstancesAsync(tenantName);
 
                 if (instances == null || !instances.Any())

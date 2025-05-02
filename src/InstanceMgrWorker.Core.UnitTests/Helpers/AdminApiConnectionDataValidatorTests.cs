@@ -28,7 +28,9 @@ public class Given_AdminApiSettings_provided
         _adminApiSettings.AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/complete";
         _adminApiSettings.Username = "test-username";
         _adminApiSettings.ClientId = "test-clientid";
-        _adminApiSettings.Password = "test-password";
+        _adminApiSettings.ClientSecret = "test-clientsecret";
+        _adminApiSettings.Scope = "test-scope";
+        _adminApiSettings.GrantType = "client_credentials";
     }
 
     [TestFixture]
@@ -97,25 +99,35 @@ public class Given_AdminApiSettings_provided
     }
 
     [TestFixture]
-    public class When_it_does_not_have_Username : Given_AdminApiSettings_provided
-    {
-        [Test]
-        public void should_be_invalid()
-        {
-            _adminApiSettings.Username = string.Empty;
-            AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
-        }
-    }
-
-    [TestFixture]
     public class When_it_does_not_have_ClientSecret : Given_AdminApiSettings_provided
     {
         [Test]
         public void should_be_invalid()
         {
-            _adminApiSettings.Password = string.Empty;
+            _adminApiSettings.ClientSecret = string.Empty;
             AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
         }
     }
 
+    [TestFixture]
+    public class When_it_does_not_have_Scope : Given_AdminApiSettings_provided
+    {
+        [Test]
+        public void should_be_invalid()
+        {
+            _adminApiSettings.Scope = string.Empty;
+            AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
+        }
+    }
+
+    [TestFixture]
+    public class When_it_does_not_have_GrantType : Given_AdminApiSettings_provided
+    {
+        [Test]
+        public void should_be_invalid()
+        {
+            _adminApiSettings.GrantType = string.Empty;
+            AdminApiConnectionDataValidator.IsValid(_logger, _adminApiSettings).ShouldBeFalse();
+        }
+    }
 }

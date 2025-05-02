@@ -3,30 +3,29 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using EdFi.Admin.DataAccess.Utils;
-using EdFi.Ods.Common.Configuration;
 using EdFi.Ods.Common.Database;
 using EdFi.Ods.Common.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
-    public class InstanceDatabaseNameBuilder : IDatabaseNameBuilder
+    public class InstanceDatabaseNameBuilder : IMgrWorkerIDatabaseNameBuilder
     {
         private const string TemplatePrefix = "Ods_";
-        private const string SandboxPrefix = TemplatePrefix + "Sandbox_";
-
-        private const string TemplateEmptyDatabase = TemplatePrefix + "Empty_Template";
         private const string TemplateMinimalDatabase = TemplatePrefix + "Minimal_Template";
-        private const string TemplateSampleDatabase = TemplatePrefix + "Populated_Template";
 
+        private string? _tenant { get; set; }
         private readonly Lazy<string> _databaseNameTemplate;
 
-        public InstanceDatabaseNameBuilder(IConfigConnectionStringsProvider connectionStringsProvider,
+        public InstanceDatabaseNameBuilder(IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider,
             IDbConnectionStringBuilderAdapterFactory connectionStringBuilderFactory)
         {
             _databaseNameTemplate = new Lazy<string>(
                 () =>
                 {
+                    if (!string.IsNullOrEmpty(_tenant))
+                        connectionStringsProvider.SetTenant(_tenant);
+
                     if (!connectionStringsProvider.ConnectionStringProviderByName.ContainsKey("EdFi_Ods"))
                     {
                         return string.Empty;
@@ -45,31 +44,29 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             get => "EdFi_Ods";
         }
 
-        public string EmptyDatabase
-        {
-            get => DatabaseName(TemplateEmptyDatabase);
-        }
+        public string EmptyDatabase => throw new NotImplementedException();
 
         public string MinimalDatabase
         {
-            get => DatabaseName(TemplateMinimalDatabase);
+            get => DatabaseName(_tenant, TemplateMinimalDatabase);
         }
 
-        public string SampleDatabase
+        public string SampleDatabase => throw new NotImplementedException();
+
+        public string SandboxNameForKey(string key) => throw new NotImplementedException();
+
+        public string KeyFromSandboxName(string sandboxName) => throw new NotImplementedException();
+
+        public string TemplateSandboxNameForKey(string sandboxKey) => throw new NotImplementedException();
+
+        public string OdsDatabaseName(string? tenant, string databaseName) => DatabaseName(tenant, TemplatePrefix + databaseName);
+
+        private string DatabaseName(string? tenant, string databaseName)
         {
-            get => DatabaseName(TemplateSampleDatabase);
-        }
-
-        public string SandboxNameForKey(string key) => DatabaseName(SandboxPrefix + key);
-
-        public string KeyFromSandboxName(string sandboxName) => sandboxName.Replace(DatabaseName(SandboxPrefix), string.Empty);
-
-        public string TemplateSandboxNameForKey(string sandboxKey) => SandboxPrefix + sandboxKey;
-
-        private string DatabaseName(string databaseName)
-            => _databaseNameTemplate.Value.IsFormatString()
+            _tenant = tenant;
+            return _databaseNameTemplate.Value.IsFormatString()
                 ? string.Format(_databaseNameTemplate.Value, databaseName)
                 : _databaseNameTemplate.Value;
+        }
     }
 }
-

@@ -292,10 +292,10 @@ jobs:
       actions: read
       id-token: write
       contents: write
-    uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
+    uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
       base64-subjects: ${{ needs.pack.outputs.hash-code }}
-      attestation-name: InstanceManagement.intoto.jsonl
+      provenance-name: InstanceManagement.intoto.jsonl
       upload-assets: true
       # TODO: remove this after this issue is resolved: https://github.com/slsa-framework/slsa-github-generator/issues/876
       compile-generator: true
