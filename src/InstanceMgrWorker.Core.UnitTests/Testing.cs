@@ -58,7 +58,9 @@ public class Testing
         adminApiSettings.AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/instances/{0}/completed";
         adminApiSettings.Username = "test-username";
         adminApiSettings.ClientId = "test-clientid";
-        adminApiSettings.Password = "test-password";
+        adminApiSettings.ClientSecret = "test-clientsecret";
+        adminApiSettings.Scope = "test-scope";
+        adminApiSettings.GrantType = "client_credentials";
         IOptions<AdminApiSettings> options = Options.Create(adminApiSettings);
         return options;
     }

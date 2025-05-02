@@ -13,8 +13,8 @@
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EdFi.Ods.Common" Version="5.0.0" />
-    <PackageReference Include="EdFi.Suite3.Admin.DataAccess" Version="7.3.367" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
+    <PackageReference Include="EdFi.Suite3.Admin.DataAccess" Version="7.4.112" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.13.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

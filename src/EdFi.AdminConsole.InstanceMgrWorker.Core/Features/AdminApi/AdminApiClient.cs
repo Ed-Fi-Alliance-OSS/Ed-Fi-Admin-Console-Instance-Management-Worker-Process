@@ -114,10 +114,12 @@ public class AdminApiClient : IAdminApiClient
             FormUrlEncodedContent content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("username", _adminApiOptions.Username),
-                    new KeyValuePair<string, string>("client_id", _adminApiOptions.ClientId),
-                    new KeyValuePair<string, string>("password", _adminApiOptions.Password),
-                    new KeyValuePair<string, string>("grant_type", "password")
+                    new("username", _adminApiOptions.Username),
+                    new("client_id", _adminApiOptions.ClientId),
+                    new("client_secret", _adminApiOptions.ClientSecret),
+                    new("password", _adminApiOptions.Password),
+                    new("grant_type", _adminApiOptions.GrantType),
+                    new("scope", _adminApiOptions.Scope)
                 }
             );
 
@@ -137,7 +139,7 @@ public class AdminApiClient : IAdminApiClient
             }
             else
             {
-                _logger.LogError("Not able to get Admin Api Access Token");
+                _logger.LogError("Not able to get Admin Api Access Token. Status Code: {0}", apiResponse.StatusCode.ToString());
             }
         }
     }

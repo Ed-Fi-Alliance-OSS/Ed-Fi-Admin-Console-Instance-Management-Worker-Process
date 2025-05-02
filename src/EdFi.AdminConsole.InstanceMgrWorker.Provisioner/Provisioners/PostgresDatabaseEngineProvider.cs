@@ -11,7 +11,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
     {
         public DatabaseEngine DatabaseEngine { get; }
 
-        public PostgresDatabaseEngineProvider(IConfigConnectionStringsProvider connectionStringsProvider)
+        public PostgresDatabaseEngineProvider(IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider)
         {
             DatabaseEngine = DatabaseEngine.CreateFromProviderName("Npgsql");
         }

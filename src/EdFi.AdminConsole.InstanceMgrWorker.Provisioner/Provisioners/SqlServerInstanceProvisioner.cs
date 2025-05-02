@@ -7,7 +7,6 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using Dapper;
 using EdFi.Admin.DataAccess.Utils;
-using EdFi.Ods.Common.Configuration;
 using log4net;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +20,7 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
     private readonly string _sqlServerBakFile;
 
     public SqlServerInstanceProvisioner(IConfiguration configuration,
-            IConfigConnectionStringsProvider connectionStringsProvider, IDatabaseNameBuilder databaseNameBuilder)
+            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IMgrWorkerIDatabaseNameBuilder databaseNameBuilder)
             : base(configuration, connectionStringsProvider, databaseNameBuilder)
     {
         _sqlServerBakFile = configuration.GetSection("AppSettings:SqlServerBakFile").Value ?? string.Empty;
@@ -33,7 +32,7 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
         {
             var results = await conn.QueryAsync<string>(
                     $"SELECT name FROM sys.databases WHERE name like @DbName;",
-                    new { DbName = _databaseNameBuilder.SandboxNameForKey(instanceName) }, commandTimeout: CommandTimeout)
+                    new { DbName = _databaseNameBuilder.OdsDatabaseName(_tenant, instanceName) }, commandTimeout: CommandTimeout)
                 .ConfigureAwait(false);
 
             return (results?.ToArray().Length ?? 0) > 0;
@@ -162,10 +161,10 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
             foreach (string key in deletedClientKeys)
             {
                 await conn.ExecuteAsync($@"
-                         IF EXISTS (SELECT name from sys.databases WHERE (name = '{_databaseNameBuilder.SandboxNameForKey(key)}'))
+                         IF EXISTS (SELECT name from sys.databases WHERE (name = '{key}'))
                         BEGIN
-                            ALTER DATABASE [{_databaseNameBuilder.SandboxNameForKey(key)}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                            DROP DATABASE [{_databaseNameBuilder.SandboxNameForKey(key)}];
+                            ALTER DATABASE [{key}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                            DROP DATABASE [{key}];
                         END;
                         ", commandTimeout: CommandTimeout)
                     .ConfigureAwait(false);

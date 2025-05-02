@@ -18,6 +18,11 @@ public interface IAdminApiCaller
     Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant, string status = nameof(InstanceStatus.Pending));
 
     Task<bool> CompleteInstanceAsync(int instanceId, string? tenant);
+
+    Task<bool> DeletedInstanceAsync(int instanceId, string? tenant);
+
+    Task<bool> DeletedFailedInstanceAsync(int instanceId, string? tenant);
+
 }
 
 public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOptions<AdminApiSettings> adminApiOptions) : IAdminApiCaller
@@ -114,6 +119,36 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
             var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant);
+
+            return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
+        }
+        else
+        {
+            _logger.LogError("AdminApi Settings has not been set properly.");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeletedInstanceAsync(int instanceId, string? tenant)
+    {
+        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
+        {
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleInstanceDeletedURL, instanceId), tenant);
+
+            return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
+        }
+        else
+        {
+            _logger.LogError("AdminApi Settings has not been set properly.");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeletedFailedInstanceAsync(int instanceId, string? tenant)
+    {
+        if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
+        {
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleInstanceDeleteFailedURL, instanceId), tenant);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }
