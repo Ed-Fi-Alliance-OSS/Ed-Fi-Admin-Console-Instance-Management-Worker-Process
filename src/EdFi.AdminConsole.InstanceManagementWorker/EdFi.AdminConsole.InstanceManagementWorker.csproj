@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,11 +17,11 @@
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EdFi.Common" Version="5.0.0" />
     <PackageReference Include="EdFi.Ods.Common" Version="5.0.0" />
-    <PackageReference Include="EdFi.Suite3.Admin.DataAccess" Version="7.3.367" />
-    <PackageReference Include="EdFi.Suite3.Common" Version="7.3.162" />
+    <PackageReference Include="EdFi.Suite3.Admin.DataAccess" Version="7.4.112" />
+    <PackageReference Include="EdFi.Suite3.Common" Version="7.4.94" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.3" />
@@ -47,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-     <None Update="appsettings.MsSqlServer.Development.json">
+    <None Update="appsettings.MsSqlServer.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Development.json">
@@ -57,4 +58,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
 </Project>
