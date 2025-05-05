@@ -52,7 +52,7 @@ jobs:
 
       - name: Initialize CodeQL
         if: success()
-        uses: github/codeql-action/init@1b549b9259bda1cb5ddde3b41741a82a2d15a841 # v3.28.13
+        uses: github/codeql-action/init@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         with:
           languages: csharp
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Perform CodeQL Analysis
         if: success()
-        uses: github/codeql-action/analyze@1b549b9259bda1cb5ddde3b41741a82a2d15a841 # v3.28.13
+        uses: github/codeql-action/analyze@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
 
   event_file:
     name: "Event File"
