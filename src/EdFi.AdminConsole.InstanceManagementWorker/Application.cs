@@ -91,6 +91,7 @@ public class Application(
         var tenantNames = tenants.Select(tenant => tenant.Document.Name).ToList();
         foreach (var tenantName in tenantNames)
         {
+            _instanceProvisioner.Tenant = tenantName;
             // Step 1. Get instances data from Admin API - Admin Console extension.
             var instances = await _adminApiCaller.GetInstancesAsync(tenantName, nameof(InstanceStatus.Pending_Delete));
 
