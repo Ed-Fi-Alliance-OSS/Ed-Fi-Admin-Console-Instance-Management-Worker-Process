@@ -68,6 +68,11 @@ public class AdminApiClient : IAdminApiClient
 
                 if (response.StatusCode == HttpStatusCode.OK)
                     break;
+
+                if (currentAttempt == RetryAttempts)
+                {
+                    _logger.LogError("Error calling {0}. Status Code: {1}. Response: {3}", url, response.StatusCode.ToString(), response.Content);
+                }
             }
         }
 
@@ -102,6 +107,11 @@ public class AdminApiClient : IAdminApiClient
 
             if (response.StatusCode is HttpStatusCode.Created or HttpStatusCode.OK or HttpStatusCode.NoContent)
                 break;
+
+            if (currentAttempt == RetryAttempts)
+            {
+                _logger.LogError("Error calling {0}. Status Code: {1}. Response: {3}", url, response.StatusCode.ToString(), response.Content);
+            }
         }
 
         return response;
