@@ -17,7 +17,7 @@ public interface IAdminApiCaller
 
     Task<IEnumerable<AdminConsoleInstance>> GetInstancesAsync(string? tenant, string status = nameof(InstanceStatus.Pending));
 
-    Task<bool> CompleteInstanceAsync(int instanceId, string? tenant);
+    Task<bool> CompleteInstanceAsync(int instanceId, string? tenant, CompleteInstanceRequest request);
 
     Task<bool> DeletedInstanceAsync(int instanceId, string? tenant);
 
@@ -114,11 +114,11 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
         }
     }
 
-    public async Task<bool> CompleteInstanceAsync(int instanceId, string? tenant)
+    public async Task<bool> CompleteInstanceAsync(int instanceId, string? tenant, CompleteInstanceRequest request)
     {
         if (AdminApiConnectionDataValidator.IsValid(_logger, _adminApiOptions))
         {
-            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant);
+            var response = await _adminApiClient.AdminApiPost(string.Format(_adminApiOptions.AdminConsoleCompleteInstancesURL, instanceId), tenant, request);
 
             return (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.OK);
         }

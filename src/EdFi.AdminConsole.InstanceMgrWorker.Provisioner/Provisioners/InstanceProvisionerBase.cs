@@ -4,7 +4,6 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Data.Common;
-using EdFi.Admin.DataAccess.Utils;
 using EdFi.Ods.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 
@@ -43,6 +42,13 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
                 _connectionStringsProvider.SetTenant(value);
                 ConnectionString = _connectionStringsProvider.GetConnectionString("EdFi_Master");
             }
+        }
+
+        public string GetConnectionString(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+            return _connectionStringsProvider.GetConnectionString(name);
         }
 
         public string[] GetInstancesDatabases() => GetInstancesDatabasesAsync().GetResultSafely();

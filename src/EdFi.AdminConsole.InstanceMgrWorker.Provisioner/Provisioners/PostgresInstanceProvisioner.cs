@@ -5,18 +5,14 @@
 
 using System.Data.Common;
 using Dapper;
-using EdFi.Admin.DataAccess.Utils;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
-    public class PostgresInstanceProvisioner : InstanceProvisionerBase
+    public class PostgresInstanceProvisioner(IConfiguration configuration,
+        IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IMgrWorkerIDatabaseNameBuilder databaseNameBuilder) : InstanceProvisionerBase(configuration, connectionStringsProvider, databaseNameBuilder)
     {
-        public PostgresInstanceProvisioner(IConfiguration configuration,
-            IMgrWorkerConfigConnectionStringsProvider connectionStringsProvider, IMgrWorkerIDatabaseNameBuilder databaseNameBuilder)
-            : base(configuration, connectionStringsProvider, databaseNameBuilder) { }
-
         public override async Task RenameDbInstancesAsync(string oldName, string newName)
         {
             using (var conn = CreateConnection())

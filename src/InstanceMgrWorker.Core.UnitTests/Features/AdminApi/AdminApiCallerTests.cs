@@ -109,7 +109,11 @@ public class Given_an_admin_api
         private ILogger<When_instances_are_returned_from_api> _logger;
         private IAdminApiCaller _adminApiCaller;
         private IAdminApiClient _adminApiClient;
-        private int instanceId = 1;
+        private readonly int instanceId = 1;
+        private readonly CompleteInstanceRequest completeInstanceRequest = new CompleteInstanceRequest()
+        {
+            ConnectionString = ""
+        };
 
         [SetUp]
         public void SetUp()
@@ -118,7 +122,7 @@ public class Given_an_admin_api
 
             _adminApiClient = A.Fake<IAdminApiClient>();
 
-            A.CallTo(() => _adminApiClient.AdminApiPost(string.Format(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURL, instanceId), null))
+            A.CallTo(() => _adminApiClient.AdminApiPost(string.Format(Testing.GetAdminApiSettings().Value.AdminConsoleCompleteInstancesURL, instanceId), null, completeInstanceRequest))
                 .Returns(new ApiResponse(HttpStatusCode.OK, string.Empty));
 
             _adminApiCaller = new AdminApiCaller(_logger, _adminApiClient, Testing.GetAdminApiSettings());
@@ -127,7 +131,7 @@ public class Given_an_admin_api
         [Test]
         public async Task should_return_successfully()
         {
-            var result = await _adminApiCaller.CompleteInstanceAsync(1, null);
+            var result = await _adminApiCaller.CompleteInstanceAsync(1, null, completeInstanceRequest);
 
             result.ShouldBe(true);
         }

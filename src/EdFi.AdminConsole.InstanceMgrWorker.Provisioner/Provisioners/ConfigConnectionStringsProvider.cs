@@ -7,16 +7,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 {
-    public class ConfigConnectionStringsProvider : IMgrWorkerConfigConnectionStringsProvider
+    public class ConfigConnectionStringsProvider(IConfiguration config) : IMgrWorkerConfigConnectionStringsProvider
     {
-        private string _tenant;
-        private readonly IConfiguration _config;
-
-        public ConfigConnectionStringsProvider(IConfiguration config)
-        {
-            _tenant = string.Empty;
-            _config = config;
-        }
+        private string _tenant = string.Empty;
+        private readonly IConfiguration _config = config;
 
         public int Count => ConnectionStringProviderByName.Keys.Count;
 

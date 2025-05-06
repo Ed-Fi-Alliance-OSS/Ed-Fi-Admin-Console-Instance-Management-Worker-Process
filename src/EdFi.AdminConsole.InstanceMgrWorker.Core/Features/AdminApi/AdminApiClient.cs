@@ -9,6 +9,7 @@ using System.Text;
 using EdFi.AdminConsole.InstanceMgrWorker.Core.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi;
@@ -17,27 +18,19 @@ public interface IAdminApiClient
 {
     Task<ApiResponse> AdminApiGet(string url, string? tenant);
 
-    Task<ApiResponse> AdminApiPost(string url, string? tenant);
+    Task<ApiResponse> AdminApiPost(string url, string? tenant, object? body = null);
 }
 
-public class AdminApiClient : IAdminApiClient
+public class AdminApiClient(
+    IAppHttpClient appHttpClient,
+    ILogger logger,
+    IOptions<AdminApiSettings> adminApiOptions
+    ) : IAdminApiClient
 {
-    private readonly IAppHttpClient _appHttpClient;
-    protected readonly ILogger _logger;
-    private readonly IAdminApiSettings _adminApiOptions;
-    private string _accessToken;
-
-    public AdminApiClient(
-        IAppHttpClient appHttpClient,
-        ILogger logger,
-        IOptions<AdminApiSettings> adminApiOptions
-    )
-    {
-        _appHttpClient = appHttpClient;
-        _logger = logger;
-        _adminApiOptions = adminApiOptions.Value;
-        _accessToken = string.Empty;
-    }
+    private readonly IAppHttpClient _appHttpClient = appHttpClient;
+    protected readonly ILogger _logger = logger;
+    private readonly AdminApiSettings _adminApiOptions = adminApiOptions.Value;
+    private string _accessToken = string.Empty;
 
     public async Task<ApiResponse> AdminApiGet(string url, string? tenant)
     {
@@ -79,7 +72,7 @@ public class AdminApiClient : IAdminApiClient
         return response;
     }
 
-    public async Task<ApiResponse> AdminApiPost(string url, string? tenant)
+    public async Task<ApiResponse> AdminApiPost(string url, string? tenant, object? body = null)
     {
         ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, "Unknown error.");
         await GetAccessToken();
@@ -87,10 +80,10 @@ public class AdminApiClient : IAdminApiClient
         const int RetryAttempts = 3;
         var currentAttempt = 0;
 
-        StringContent? content = null;
+        StringContent? content = new StringContent(body != null ? JsonConvert.SerializeObject(body) : string.Empty, Encoding.UTF8, "application/json");
+
         if (!string.IsNullOrEmpty(tenant))
         {
-            content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
             content.Headers.Add("tenant", tenant);
         }
 
