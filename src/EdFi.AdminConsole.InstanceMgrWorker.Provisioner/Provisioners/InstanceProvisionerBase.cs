@@ -44,11 +44,12 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
             }
         }
 
-        public string GetConnectionString(string name)
+        public string GetOdsConnectionString(string instanceName)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name));
-            return _connectionStringsProvider.GetConnectionString(name);
+            if (string.IsNullOrEmpty(instanceName))
+                throw new ArgumentNullException(nameof(instanceName));
+
+            return string.Format(_connectionStringsProvider.GetConnectionString("EdFi_Ods"), _databaseNameBuilder.OdsDatabaseName(null, instanceName));
         }
 
         public string[] GetInstancesDatabases() => GetInstancesDatabasesAsync().GetResultSafely();

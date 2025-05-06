@@ -21,7 +21,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 
         string[] GetInstancesDatabases();
 
-        string GetConnectionString(string name);
+        string GetOdsConnectionString(string instanceName);
 
         string Tenant { get; set; }
 

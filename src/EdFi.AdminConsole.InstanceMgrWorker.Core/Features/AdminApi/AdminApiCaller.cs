@@ -68,7 +68,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
         else
         {
             _logger.LogError("AdminApi Settings has not been set properly.");
-            return new List<AdminConsoleTenant>();
+            return [];
         }
     }
 
@@ -110,7 +110,7 @@ public class AdminApiCaller(ILogger logger, IAdminApiClient adminApiClient, IOpt
         else
         {
             _logger.LogError("AdminApi Settings has not been set properly.");
-            return new List<AdminConsoleInstance>();
+            return [];
         }
     }
 
