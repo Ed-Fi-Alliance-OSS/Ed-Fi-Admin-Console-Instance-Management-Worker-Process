@@ -161,10 +161,10 @@ public class SqlServerInstanceProvisioner : InstanceProvisionerBase
             foreach (string key in deletedClientKeys)
             {
                 await conn.ExecuteAsync($@"
-                         IF EXISTS (SELECT name from sys.databases WHERE (name = '{key}'))
+                         IF EXISTS (SELECT name from sys.databases WHERE (name = '{_databaseNameBuilder.OdsDatabaseName(_tenant, key)}'))
                         BEGIN
-                            ALTER DATABASE [{key}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                            DROP DATABASE [{key}];
+                            ALTER DATABASE [{_databaseNameBuilder.OdsDatabaseName(_tenant, key)}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                            DROP DATABASE [{_databaseNameBuilder.OdsDatabaseName(_tenant, key)}];
                         END;
                         ", commandTimeout: CommandTimeout)
                     .ConfigureAwait(false);

@@ -40,10 +40,10 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
                 foreach (string key in deletedClientKeys)
                 {
                     await conn.ExecuteAsync(
-                        $@"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{key}';");
+                        $@"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{_databaseNameBuilder.OdsDatabaseName(_tenant, key)}';");
 
                     await conn.ExecuteAsync(
-                            $@"DROP DATABASE IF EXISTS ""{key}"";",
+                            $@"DROP DATABASE IF EXISTS ""{_databaseNameBuilder.OdsDatabaseName(_tenant, key)}"";",
                             commandTimeout: CommandTimeout)
                         .ConfigureAwait(false);
                 }
