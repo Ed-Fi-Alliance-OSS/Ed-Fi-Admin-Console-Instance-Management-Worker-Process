@@ -21,6 +21,8 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners
 
         string[] GetInstancesDatabases();
 
+        string GetOdsConnectionString(string instanceName);
+
         string Tenant { get; set; }
 
         Task AddDbInstanceAsync(string instanceName, DbInstanceType instanceType);

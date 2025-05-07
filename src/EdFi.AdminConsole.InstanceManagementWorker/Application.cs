@@ -73,7 +73,7 @@ public class Application(
 
                             await _instanceProvisioner.AddDbInstanceAsync(instanceName, DbInstanceType.Minimal);
 
-                            if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName))
+                            if (!await _adminApiCaller.CompleteInstanceAsync(instance.Id, instance.TenantName, new CompleteInstanceRequest() { ConnectionString = _instanceProvisioner.GetOdsConnectionString(instanceName) }))
                                 _logger.LogError("Not able to complete instance.");
 
                             _logger.LogInformation("Completed processing instance with name: {InstanceName}", instanceName);
