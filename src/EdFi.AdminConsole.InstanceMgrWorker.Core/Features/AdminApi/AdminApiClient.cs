@@ -39,9 +39,6 @@ public class AdminApiClient(
 
         if (!string.IsNullOrEmpty(_accessToken))
         {
-            const int RetryAttempts = 3;
-            var currentAttempt = 0;
-
             StringContent? content = null;
             if (!string.IsNullOrEmpty(tenant))
             {
@@ -49,24 +46,11 @@ public class AdminApiClient(
                 content.Headers.Add("tenant", tenant);
             }
 
-            while (RetryAttempts > currentAttempt)
-            {
-                response = await _appHttpClient.SendAsync(url,
-                    HttpMethod.Get,
-                    content,
-                    new AuthenticationHeaderValue("bearer", _accessToken)
-                );
-
-                currentAttempt++;
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                    break;
-
-                if (currentAttempt == RetryAttempts)
-                {
-                    _logger.LogError("Error calling {0}. Status Code: {1}. Response: {3}", url, response.StatusCode.ToString(), response.Content);
-                }
-            }
+            response = await _appHttpClient.SendAsync(url,
+                HttpMethod.Get,
+                content,
+                new AuthenticationHeaderValue("bearer", _accessToken)
+            );
         }
 
         return response;
@@ -77,34 +61,21 @@ public class AdminApiClient(
         ApiResponse response = new ApiResponse(HttpStatusCode.InternalServerError, "Unknown error.");
         await GetAccessToken();
 
-        const int RetryAttempts = 3;
-        var currentAttempt = 0;
-
-        StringContent? content = new StringContent(body != null ? JsonConvert.SerializeObject(body) : string.Empty, Encoding.UTF8, "application/json");
-
-        if (!string.IsNullOrEmpty(tenant))
+        if (!string.IsNullOrEmpty(_accessToken))
         {
-            content.Headers.Add("tenant", tenant);
-        }
+            StringContent? content = new StringContent(body != null ? JsonConvert.SerializeObject(body) : string.Empty, Encoding.UTF8, "application/json");
 
-        while (RetryAttempts > currentAttempt)
-        {
+            if (!string.IsNullOrEmpty(tenant))
+            {
+                content.Headers.Add("tenant", tenant);
+            }
+
             response = await _appHttpClient.SendAsync(
                 url,
                 HttpMethod.Post,
                 content,
                 new AuthenticationHeaderValue("bearer", _accessToken)
             );
-
-            currentAttempt++;
-
-            if (response.StatusCode is HttpStatusCode.Created or HttpStatusCode.OK or HttpStatusCode.NoContent)
-                break;
-
-            if (currentAttempt == RetryAttempts)
-            {
-                _logger.LogError("Error calling {0}. Status Code: {1}. Response: {3}", url, response.StatusCode.ToString(), response.Content);
-            }
         }
 
         return response;
