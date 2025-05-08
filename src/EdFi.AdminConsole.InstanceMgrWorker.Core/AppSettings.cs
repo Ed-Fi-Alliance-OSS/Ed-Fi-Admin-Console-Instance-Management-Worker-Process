@@ -11,6 +11,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         bool IgnoresCertificateErrors { get; set; }
         bool OverrideExistingDatabase { get; set; }
         string SqlServerBakFile { get; set; }
+        int MaxRetryAttempts { get; set; }
     }
 
     public sealed class AppSettings : IAppSettings
@@ -19,5 +20,6 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core
         public bool IgnoresCertificateErrors { get; set; } = false;
         public bool OverrideExistingDatabase { get; set; } = false;
         public string SqlServerBakFile { get; set; } = string.Empty;
+        public int MaxRetryAttempts { get; set; } = 5;
     }
 }

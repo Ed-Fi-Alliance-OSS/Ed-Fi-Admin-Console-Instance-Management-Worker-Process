@@ -115,4 +115,49 @@ public class Given_an_admin_api_http_client
             InstancesReponse.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.InternalServerError);
         }
     }
+
+    [TestFixture]
+    public class When_http_client_fails_with_transient_failure : Given_an_admin_api_http_client
+    {
+        public class TestHttpMessageHandler : HttpMessageHandler
+        {
+            private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _sendAsync;
+
+            public TestHttpMessageHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sendAsync) => _sendAsync = sendAsync;
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                return _sendAsync(request, cancellationToken);
+            }
+        }
+
+        [Test]
+        public async Task should_retry_a_number_of_times()
+        {
+            var transientFailureResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
+            var tenantsUrl = Testing.GetAdminApiSettings().Value.AdminConsoleTenantsURL;
+
+            var successResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("Success")
+            };
+
+            var attempts = 0;
+            var testHttpMessageHandler = new TestHttpMessageHandler((request, cancellationToken) =>
+            {
+                attempts++;
+                /// Fails the first 2 attempts and succeeds on the 3rd
+                return Task.FromResult(attempts < 3 ? transientFailureResponse : successResponse);
+            });
+
+            var httpClient = new HttpClient(testHttpMessageHandler);
+            var appHttpClient = new AppHttpClient(httpClient, _logger, Testing.GetAppSettings());
+
+            var response = await appHttpClient.SendAsync(tenantsUrl, HttpMethod.Get, null as StringContent, null);
+
+            response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+            response.Content.ShouldBe("Success");
+            attempts.ShouldBe(3);
+        }
+    }
 }
