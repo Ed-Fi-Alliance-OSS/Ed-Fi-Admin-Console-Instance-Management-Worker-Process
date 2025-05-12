@@ -14,5 +14,7 @@ namespace EdFi.AdminConsole.InstanceMgrWorker.Core.Helpers
         public const string TenantHeader = "tenant";
 
         public const string CompletedInstances = "?status=Completed";
+
+        public const int RetryStartingDelayMilliseconds = 500;
     }
 }

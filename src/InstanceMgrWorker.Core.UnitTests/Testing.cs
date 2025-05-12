@@ -51,17 +51,27 @@ public class Testing
 
     public static IOptions<AdminApiSettings> GetAdminApiSettings()
     {
-        AdminApiSettings adminApiSettings = new AdminApiSettings();
-        adminApiSettings.AccessTokenUrl = "http://www.myserver.com/token";
-        adminApiSettings.AdminConsoleTenantsURL = "http://www.myserver.com/adminconsole/tenants";
-        adminApiSettings.AdminConsoleInstancesURL = "http://www.myserver.com/adminconsole/instances?status=pending";
-        adminApiSettings.AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/instances/{0}/completed";
-        adminApiSettings.Username = "test-username";
-        adminApiSettings.ClientId = "test-clientid";
-        adminApiSettings.ClientSecret = "test-clientsecret";
-        adminApiSettings.Scope = "test-scope";
-        adminApiSettings.GrantType = "client_credentials";
+        AdminApiSettings adminApiSettings = new()
+        {
+            AccessTokenUrl = "http://www.myserver.com/token",
+            AdminConsoleTenantsURL = "http://www.myserver.com/adminconsole/tenants",
+            AdminConsoleInstancesURL = "http://www.myserver.com/adminconsole/instances?status=pending",
+            AdminConsoleCompleteInstancesURL = "http://www.myserver.com/adminconsole/instances/{0}/completed",
+            Username = "test-username",
+            ClientId = "test-clientid",
+            ClientSecret = "test-clientsecret",
+            Scope = "test-scope",
+            GrantType = "client_credentials"
+        };
         IOptions<AdminApiSettings> options = Options.Create(adminApiSettings);
+        return options;
+    }
+
+    public static IOptions<AppSettings> GetAppSettings()
+    {
+        AppSettings apiSettings = new();
+        apiSettings.MaxRetryAttempts = 3;
+        IOptions<AppSettings> options = Options.Create(apiSettings);
         return options;
     }
 }

@@ -3,7 +3,6 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using EdFi.Admin.DataAccess.Utils;
 using EdFi.AdminConsole.InstanceMgrWorker.Configuration.Provisioners;
 using EdFi.AdminConsole.InstanceMgrWorker.Core;
 using EdFi.AdminConsole.InstanceMgrWorker.Core.Features.AdminApi;
@@ -69,7 +68,6 @@ namespace EdFi.AdminConsole.InstanceManagementWorker
                 services.AddTransient<IInstanceProvisioner, PostgresInstanceProvisioner>();
             }
 
-            services.AddTransient<IHttpRequestMessageBuilder, HttpRequestMessageBuilder>();
             services.AddTransient<IAdminApiClient, AdminApiClient>();
             services.AddTransient<IAdminApiCaller, AdminApiCaller>();
             services.AddTransient<IApplication, Application>();
