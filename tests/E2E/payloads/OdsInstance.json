@@ -1,0 +1,5 @@
+{
+    "name": "%Name%",
+    "instanceType": "ODS",
+    "connectionString": "host=ed-fi-db-ods-tenant1;port=5432;username=postgres;password=%Password%;database=EdFi_Ods;application name=EdFi.Ods.WebApi"
+}
