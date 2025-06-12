@@ -55,7 +55,7 @@ Write-Host "OdsInstanceId: $odsInstanceId"
 Remove-Item -Path "$PSScriptRoot/payloads/odsInstanceCopy.json"
 
 # 4. Call Ed-Fi Admin Console Instance Management Worker Process
-Write-Host "Call Ed-Fi-Admin-Console-Health-Check-Worker-Process..."
+Write-Host "Call Ed-Fi-Admin-Console-Instance-Management-Worker-Process..."
 docker run --rm edfi.adminconsole.instancemanagementworker dotnet EdFi.AdminConsole.InstanceManagementWorker.dll --isMultiTenant=true --tenant="$env:DEFAULTTENANT" --ClientId="$env:clientId" --ClientSecret="$env:clientSecret"
 
 # 5. Call Admin Api to check if instance is completed
