@@ -25,6 +25,28 @@ if ($d) {
     }
 }
 else {
+    Write-Output "123"
+    Push-Location
+    Set-Location "$PSScriptRoot/../../"
+    Write-Output "ABC $(Get-Location)"
+    try {
+        $dockerBuildArgs = @(
+            "build",
+            "-f", "docker/Dockerfile",
+            "-t", "edfi.adminconsole.instancemanagementworker"
+        )
+        $dockerBuildArgs += "."
+        $buildResult = & docker @dockerBuildArgs
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Docker build failed with exit code $LASTEXITCODE"
+            return
+        }
+        Write-Output "Instance Management Service Docker image built successfully!"
+    }
+    finally {
+        # Always return to original location
+       Pop-Location
+    }
     $pull = "never"
     if ($p) {
         $pull = "always"
@@ -32,4 +54,5 @@ else {
 
     Write-Output "Starting services"
     docker compose up -d
+
 }
