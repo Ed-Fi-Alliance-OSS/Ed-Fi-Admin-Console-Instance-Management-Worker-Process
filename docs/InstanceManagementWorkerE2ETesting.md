@@ -94,3 +94,17 @@ The E2E tests require:
 - Docker
 - Access to Admin API services
 - Valid client credentials
+
+## Current State and Next Steps
+
+### Current State
+
+The environment is set up using Docker to run Admin API along with their databases. The Admin API was updated to use the latest endpoints, and corresponding payloads were adjusted to match the new schema.
+
+This setup enables running the Instance Management Worker. However, the E2E test currently fails because the Instance Management service attempts to authenticate using a Keycloak-generated token. Since the Admin API now uses self-contained authorization (Keycloak has been removed), this causes a token mismatch and results in authentication failure.
+
+### Next Steps
+
+- **Update Instance Management Worker** to support Admin API’s new self-contained authorization  
+- **Remove dependency on Keycloak** for Instance Management authentication  
+- **Create a new ticket** to track the work required for the auth update
