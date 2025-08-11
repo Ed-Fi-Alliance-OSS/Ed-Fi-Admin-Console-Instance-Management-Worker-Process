@@ -13,7 +13,7 @@
     <EnvironmentName>Development</EnvironmentName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="Azure.Identity" Version="1.14.2" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EdFi.Common" Version="5.0.0" />
     <PackageReference Include="EdFi.Ods.Common" Version="5.0.0" />
